@@ -1,12 +1,12 @@
 {
-  "name": "ਮਾਹਵਾਰੀ ਅਤੇ ਸਿਹਤ ਟਰੈਕਰ",
-  "short_name": "ਸਿਹਤ ਟਰੈਕਰ",
+  "name": "Periods",
+  "short_name": "Periods",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ec4899",
-  "description": "ਮਾਹਵਾਰੀ ਅਤੇ ਸਿਹਤ ਰਿਕਾਰਡ, PDF export, ਅਤੇ predictions ਵਾਲਾ PWA.",
+  "description": "Periods tracker, PDF export, ਅਤੇ health records ਵਾਲਾ PWA.",
   "icons": [
     {
       "src": "icon-192.png",
