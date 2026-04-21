@@ -153,16 +153,9 @@
 
     <div id="tab-history" class="hidden space-y-4">
         <div class="glass rounded-2xl p-5">
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
                 <select id="yearFilter" onchange="renderHistory()" class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-pink-400 transition shadow-sm">
                     <option value="all">ਸਾਰੇ ਸਾਲ</option>
-                </select>
-                <select id="monthFilter" onchange="renderHistory()" class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-pink-400 transition shadow-sm">
-                    <option value="all">ਸਾਰੇ ਮਹੀਨੇ</option>
-                    <option value="0">ਜਨਵਰੀ</option><option value="1">ਫਰਵਰੀ</option><option value="2">ਮਾਰਚ</option>
-                    <option value="3">ਅਪ੍ਰੈਲ</option><option value="4">ਮਈ</option><option value="5">ਜੂਨ</option>
-                    <option value="6">ਜੁਲਾਈ</option><option value="7">ਅਗਸਤ</option><option value="8">ਸਤੰਬਰ</option>
-                    <option value="9">ਅਕਤੂਬਰ</option><option value="10">ਨਵੰਬਰ</option><option value="11">ਦਸੰਬਰ</option>
                 </select>
                 <select id="statusFilter" onchange="renderHistory()" class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-pink-400 transition shadow-sm">
                     <option value="all">ਸਾਰੀ ਸਥਿਤੀ</option>
@@ -354,7 +347,7 @@ function renderDashboard() {
     }
     const last = cycles[0]; const today = new Date().toISOString().split('T')[0];
     const dayN = daysDiff(last.date, today)+1; const phase = getPhase(dayN);
-    const avg = avgCycleLength(); const daysLeft = Math.max(0, avg - dayN + 1);
+    const avg = avgCycleLength(); 
 
     const pct = Math.min(dayN/avg, 1);
     const r=42, circ=2*Math.PI*r; const offset = circ*(1-pct);
@@ -372,7 +365,6 @@ function renderDashboard() {
             <div class="flex-1 w-full space-y-2">
                 <div class="flex justify-between items-center bg-pink-50 rounded-xl px-4 py-3 border border-pink-100"><span class="text-sm text-gray-600">ਪਿਛਲੀ ਮਾਹਵਾਰੀ</span><span class="font-bold text-pink-700 text-sm">${fmtDate(last.date)}</span></div>
                 <div class="flex justify-between items-center bg-purple-50 rounded-xl px-4 py-3 border border-purple-100"><span class="text-sm text-gray-600">ਔਸਤ ਚੱਕਰ</span><span class="font-bold text-purple-700 text-sm">${avg} ਦਿਨ</span></div>
-                <div class="flex justify-between items-center bg-blue-50 rounded-xl px-4 py-3 border border-blue-100"><span class="text-sm text-gray-600">ਅਗਲੇ ਪੀਰੀਅਡ ਤੱਕ</span><span class="font-bold text-blue-700 text-sm">${daysLeft} ਦਿਨ</span></div>
             </div>
         </div>
         <div class="${phase.color} rounded-xl p-4 flex flex-col gap-2">
@@ -394,21 +386,20 @@ function populateYearFilter() {
     if(years.includes(parseInt(prev))) f.value=prev;
 }
 
-// ਨਵਾਂ ਅਤੇ ਸਾਫ਼ ਟੇਬਲ ਡਿਜ਼ਾਈਨ
 function renderHistory() {
     const cont = document.getElementById('historyContainer');
-    const fy = document.getElementById('yearFilter').value, fm = document.getElementById('monthFilter').value;
-    const fs = document.getElementById('statusFilter').value, ff = document.getElementById('flowFilter').value;
+    const fy = document.getElementById('yearFilter').value;
+    const fs = document.getElementById('statusFilter').value;
+    const ff = document.getElementById('flowFilter').value;
     const fq = document.getElementById('searchFilter').value.toLowerCase();
 
     let filtered = cycles.filter(c=>{
         const d = new Date(c.date+'T00:00:00');
         const ym = fy==='all'||d.getFullYear().toString()===fy;
-        const mm = fm==='all'||d.getMonth().toString()===fm;
         const sm = fs==='all'||c.status===fs||(fs==='normal'&&c.status==='first');
         const flm = ff==='all'||c.flow===ff;
         const qm = !fq || (c.note&&c.note.toLowerCase().includes(fq))||(c.symptoms&&c.symptoms.join(' ').toLowerCase().includes(fq));
-        return ym&&mm&&sm&&flm&&qm;
+        return ym&&sm&&flm&&qm;
     });
 
     if(filtered.length===0){
@@ -426,7 +417,6 @@ function renderHistory() {
         
         const len = c.cycleLength ? `<span class="font-black text-gray-700">${c.cycleLength}</span>` : '<span class="text-gray-300">-</span>';
         
-        // ਮੂਡ ਅਤੇ ਫਲੋਅ ਲਈ ਸੁੰਦਰ ਬੈਜ
         let moodBadge = c.mood ? `<span class="bg-indigo-50 text-indigo-700 px-2 py-1 rounded-md text-xs font-semibold border border-indigo-100 shadow-sm">${c.mood}</span>` : '';
         let flowBadge = c.flow ? `<span class="bg-teal-50 text-teal-700 px-2 py-1 rounded-md text-xs font-semibold border border-teal-100 shadow-sm">${c.flow}</span>` : '';
         const moodFlow = `<div class="flex flex-wrap gap-1.5">${moodBadge}${flowBadge}</div>`;
@@ -502,24 +492,23 @@ function renderStats() {
     `;
 }
 
+// PDF ਨੂੰ ਪੇਜ-ਬ੍ਰੇਕ (Pagebreak) ਦੇ ਨਾਲ ਅਪਡੇਟ ਕੀਤਾ ਗਿਆ
 function downloadPDF() {
     if(cycles.length===0){ showToast('⚠️ ਕੋਈ ਡਾਟਾ ਨਹੀਂ'); return; }
     showToast('⏳ PDF ਤਿਆਰ ਹੋ ਰਿਹਾ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ...');
 
     const fy = document.getElementById('yearFilter').value;
-    const fm = document.getElementById('monthFilter').value;
     const fs = document.getElementById('statusFilter').value;
     
     let filtered = cycles.filter(c=>{
         const d = new Date(c.date+'T00:00:00');
         const ym = fy==='all'||d.getFullYear().toString()===fy;
-        const mm = fm==='all'||d.getMonth().toString()===fm;
         const sm = fs==='all'||c.status===fs||(fs==='normal'&&c.status==='first');
-        return ym&&mm&&sm;
+        return ym&&sm;
     });
 
     let htmlStr = `
-        <div id="pdfExport" style="padding: 30px; font-family: 'Noto Sans Gurmukhi', sans-serif; background-color: white;">
+        <div id="pdfExport" style="padding: 20px; font-family: 'Noto Sans Gurmukhi', sans-serif; background-color: white;">
             <h2 style="text-align:center; color:#be185d; font-size: 24px; margin-bottom: 5px;">Periods (ਸਿਹਤ ਟਰੈਕਰ)</h2>
             <p style="text-align:center; color:#6b7280; font-size:14px; margin-bottom: 20px;">ਜਨਰੇਟ ਕੀਤਾ ਗਿਆ: ${new Date().toLocaleDateString('en-IN')}</p>
             <table style="width:100%; border-collapse: collapse; font-size:14px; text-align: left;">
@@ -527,7 +516,7 @@ function downloadPDF() {
                     <tr style="background-color:#be185d; color:white;">
                         <th style="padding:10px; border:1px solid #ddd;">#</th>
                         <th style="padding:10px; border:1px solid #ddd;">ਤਰੀਕ</th>
-                        <th style="padding:10px; border:1px solid #ddd;">ਚੱਕਰ (ਦਿਨ)</th>
+                        <th style="padding:10px; border:1px solid #ddd;">ਚੱਕਰ</th>
                         <th style="padding:10px; border:1px solid #ddd;">ਸਥਿਤੀ</th>
                         <th style="padding:10px; border:1px solid #ddd;">ਫਲੋਅ</th>
                         <th style="padding:10px; border:1px solid #ddd;">ਦਰਦ</th>
@@ -539,11 +528,12 @@ function downloadPDF() {
                 <tbody>
     `;
 
+    // ਪੇਜ-ਬ੍ਰੇਕ ਤੋਂ ਬਚਾਉਣ ਲਈ 'page-break-inside: avoid;' ਲਗਾਇਆ ਗਿਆ ਹੈ
     filtered.forEach((c, i) => {
         const statusMap = { normal:'ਨਾਰਮਲ', early:'ਜਲਦੀ', late:'ਲੇਟ', first:'ਪਹਿਲਾ' };
         const symptomText = c.symptoms && c.symptoms.length ? c.symptoms.join(', ') : '-';
         htmlStr += `
-            <tr style="${i % 2 === 0 ? 'background-color:#fdf2f8;' : 'background-color:#fff;'}">
+            <tr style="${i % 2 === 0 ? 'background-color:#fdf2f8;' : 'background-color:#fff;'} page-break-inside: avoid;">
                 <td style="padding:10px; border:1px solid #ddd;">${filtered.length - i}</td>
                 <td style="padding:10px; border:1px solid #ddd; white-space: nowrap;">${fmtDate(c.date)}</td>
                 <td style="padding:10px; border:1px solid #ddd;">${c.cycleLength ? c.cycleLength : '-'}</td>
@@ -564,12 +554,14 @@ function downloadPDF() {
     tempDiv.style.top = '-9999px';
     document.body.appendChild(tempDiv);
 
+    // html2pdf Options - Added pagebreak handling
     const opt = {
         margin:       10,
         filename:     'Periods_Record.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' },
+        pagebreak:    { mode: ['css', 'legacy'] }
     };
 
     html2pdf().set(opt).from(tempDiv.firstElementChild).save().then(() => {
