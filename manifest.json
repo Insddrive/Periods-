@@ -1,7 +1,7 @@
 {
   "name": "ਮਾਹਵਾਰੀ ਅਤੇ ਸਿਹਤ ਟਰੈਕਰ",
   "short_name": "ਸਿਹਤ ਟਰੈਕਰ",
-  "start_url": "./",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
