@@ -1,4 +1,4 @@
-const CACHE_NAME = 'health-tracker-v2';
+const CACHE_NAME = 'periods-v3';
 const APP_SHELL = [
   './',
   './index.html'
