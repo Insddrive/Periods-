@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ਮਾਹਵਾਰੀ ਅਤੇ ਸਿਹਤ ਟਰੈਕਰ</title>
+    <title>Periods</title>
     
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#ec4899">
@@ -23,7 +23,7 @@
         ::-webkit-scrollbar-thumb { background: #f9a8d4; border-radius: 3px; }
         .tab-btn { transition: all 0.2s; }
         .tab-btn.active { background: linear-gradient(135deg, #ec4899, #a855f7); color: white; box-shadow: 0 2px 8px rgba(236,72,153,0.3); }
-        .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+        .badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 999px; font-weight: 600; }
         .badge-normal { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
         .badge-early { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
         .badge-late { background: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
@@ -39,17 +39,13 @@
         .progress-circle { transition: stroke-dashoffset 0.8s ease; }
         #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1f2937; color: white; padding: 10px 20px; border-radius: 10px; font-size: 0.85rem; z-index: 9999; transition: transform 0.3s ease; pointer-events: none; }
         #toast.show { transform: translateX(-50%) translateY(0); }
-        .delete-btn { opacity: 0; transition: opacity 0.2s; }
-        tr:hover .delete-btn { opacity: 1; }
-        @media (max-width: 640px) { .delete-btn { opacity: 1; } }
-        .note-row td { font-style: italic; font-size: 0.75rem; color: #6b7280; padding-top: 0 !important; border-bottom: 1px solid #f3f4f6 !important; }
     </style>
 </head>
 <body class="text-gray-800 antialiased pb-12">
 
 <header class="bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg py-4 sticky top-0 z-50">
     <div class="container mx-auto px-4 flex justify-between items-center max-w-5xl">
-        <h1 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-heart-pulse"></i> ਸਿਹਤ ਟਰੈਕਰ</h1>
+        <h1 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-heart-pulse"></i> Periods</h1>
         <div class="flex gap-2">
             <button onclick="exportJSON()" title="ਡਾਟਾ ਬੈਕਅੱਪ" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition">
                 <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">ਬੈਕਅੱਪ</span>
@@ -72,7 +68,7 @@
             <i class="fa-solid fa-plus-circle"></i> ਦਰਜ ਕਰੋ
         </button>
         <button class="tab-btn flex-1 py-2.5 rounded-xl text-sm font-bold text-gray-500 flex items-center justify-center gap-1.5" onclick="switchTab('history')">
-            <i class="fa-solid fa-clock-rotate-left"></i> ਰਿਕਾਰਡ
+            <i class="fa-solid fa-table-list"></i> ਰਿਕਾਰਡ
         </button>
         <button class="tab-btn flex-1 py-2.5 rounded-xl text-sm font-bold text-gray-500 flex items-center justify-center gap-1.5" onclick="switchTab('stats')">
             <i class="fa-solid fa-chart-pie"></i> ਅੰਕੜੇ
@@ -84,10 +80,7 @@
             <h2 class="text-lg font-bold text-pink-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-calendar-day"></i> ਮੌਜੂਦਾ ਸਥਿਤੀ</h2>
             <div id="statusDashboard"><div class="text-center py-6 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-2xl"></i></div></div>
         </div>
-        <div class="glass rounded-2xl p-5 border-t-4 border-blue-400">
-            <h2 class="text-lg font-bold text-blue-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-calendar-check"></i> ਆਉਣ ਵਾਲੀਆਂ ਤਾਰੀਖਾਂ (Prediction)</h2>
-            <div id="predictionArea" class="space-y-2"></div>
-        </div>
+        
         <div class="glass rounded-2xl p-5 border-t-4 border-green-400">
             <h2 class="text-lg font-bold text-green-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-lightbulb"></i> ਅੱਜ ਦਾ ਸਿਹਤ ਸੁਝਾਅ</h2>
             <div id="healthTip" class="text-sm text-gray-600 leading-relaxed"></div>
@@ -105,9 +98,9 @@
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">ਫਲੋਅ ਦੀ ਮਾਤਰਾ (Flow):</label>
                     <div class="flex gap-2 flex-wrap">
-                        <button class="flow-btn" data-flow="ਹਲਕਾ (Light)" onclick="selectFlow(this)">💧 ਹਲਕਾ</button>
-                        <button class="flow-btn" data-flow="ਮੱਧਮ (Medium)" onclick="selectFlow(this)">💧💧 ਮੱਧਮ</button>
-                        <button class="flow-btn" data-flow="ਭਾਰਾ (Heavy)" onclick="selectFlow(this)">💧💧💧 ਭਾਰਾ</button>
+                        <button class="flow-btn" data-flow="ਹਲਕਾ" onclick="selectFlow(this)">💧 ਹਲਕਾ</button>
+                        <button class="flow-btn" data-flow="ਮੱਧਮ" onclick="selectFlow(this)">💧💧 ਮੱਧਮ</button>
+                        <button class="flow-btn" data-flow="ਭਾਰਾ" onclick="selectFlow(this)">💧💧💧 ਭਾਰਾ</button>
                     </div>
                 </div>
                 <div>
@@ -118,12 +111,12 @@
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">ਮੂਡ (Mood):</label>
                     <div class="flex gap-2 flex-wrap">
-                        <button class="mood-btn" data-mood="ਖੁਸ਼ (Happy)" onclick="selectMood(this)">😊</button>
-                        <button class="mood-btn" data-mood="ਆਮ (Neutral)" onclick="selectMood(this)">😐</button>
-                        <button class="mood-btn" data-mood="ਉਦਾਸ (Sad)" onclick="selectMood(this)">😢</button>
-                        <button class="mood-btn" data-mood="ਚਿੜਚਿੜਾ (Irritable)" onclick="selectMood(this)">😠</button>
-                        <button class="mood-btn" data-mood="ਥਕਿਆ (Tired)" onclick="selectMood(this)">😴</button>
-                        <button class="mood-btn" data-mood="ਚਿੰਤਤ (Anxious)" onclick="selectMood(this)">😰</button>
+                        <button class="mood-btn" data-mood="ਖੁਸ਼" onclick="selectMood(this)">😊</button>
+                        <button class="mood-btn" data-mood="ਆਮ" onclick="selectMood(this)">😐</button>
+                        <button class="mood-btn" data-mood="ਉਦਾਸ" onclick="selectMood(this)">😢</button>
+                        <button class="mood-btn" data-mood="ਚਿੜਚਿੜਾ" onclick="selectMood(this)">😠</button>
+                        <button class="mood-btn" data-mood="ਥਕਿਆ" onclick="selectMood(this)">😴</button>
+                        <button class="mood-btn" data-mood="ਚਿੰਤਤ" onclick="selectMood(this)">😰</button>
                     </div>
                 </div>
                 <div>
@@ -159,40 +152,40 @@
     </div>
 
     <div id="tab-history" class="hidden space-y-4">
-        <div class="glass rounded-2xl p-4">
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-                <select id="yearFilter" onchange="renderHistory()" class="bg-white border border-gray-200 text-gray-800 text-sm rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-pink-300 shadow-sm">
+        <div class="glass rounded-2xl p-5">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+                <select id="yearFilter" onchange="renderHistory()" class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-pink-400 transition shadow-sm">
                     <option value="all">ਸਾਰੇ ਸਾਲ</option>
                 </select>
-                <select id="monthFilter" onchange="renderHistory()" class="bg-white border border-gray-200 text-gray-800 text-sm rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-pink-300 shadow-sm">
+                <select id="monthFilter" onchange="renderHistory()" class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-pink-400 transition shadow-sm">
                     <option value="all">ਸਾਰੇ ਮਹੀਨੇ</option>
                     <option value="0">ਜਨਵਰੀ</option><option value="1">ਫਰਵਰੀ</option><option value="2">ਮਾਰਚ</option>
                     <option value="3">ਅਪ੍ਰੈਲ</option><option value="4">ਮਈ</option><option value="5">ਜੂਨ</option>
                     <option value="6">ਜੁਲਾਈ</option><option value="7">ਅਗਸਤ</option><option value="8">ਸਤੰਬਰ</option>
                     <option value="9">ਅਕਤੂਬਰ</option><option value="10">ਨਵੰਬਰ</option><option value="11">ਦਸੰਬਰ</option>
                 </select>
-                <select id="statusFilter" onchange="renderHistory()" class="bg-white border border-gray-200 text-gray-800 text-sm rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-pink-300 shadow-sm">
+                <select id="statusFilter" onchange="renderHistory()" class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-pink-400 transition shadow-sm">
                     <option value="all">ਸਾਰੀ ਸਥਿਤੀ</option>
                     <option value="normal">ਨਾਰਮਲ</option>
                     <option value="early">ਜਲਦੀ</option>
                     <option value="late">ਲੇਟ</option>
                 </select>
-                <select id="flowFilter" onchange="renderHistory()" class="bg-white border border-gray-200 text-gray-800 text-sm rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-pink-300 shadow-sm">
+                <select id="flowFilter" onchange="renderHistory()" class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-pink-400 transition shadow-sm">
                     <option value="all">ਸਾਰਾ ਫਲੋਅ</option>
-                    <option value="ਹਲਕਾ (Light)">ਹਲਕਾ</option>
-                    <option value="ਮੱਧਮ (Medium)">ਮੱਧਮ</option>
-                    <option value="ਭਾਰਾ (Heavy)">ਭਾਰਾ</option>
+                    <option value="ਹਲਕਾ">ਹਲਕਾ</option>
+                    <option value="ਮੱਧਮ">ਮੱਧਮ</option>
+                    <option value="ਭਾਰਾ">ਭਾਰਾ</option>
                 </select>
             </div>
-            <div class="mb-3">
-                <input type="text" id="searchFilter" placeholder="🔍 ਨੋਟ ਜਾਂ ਲੱਛਣ ਖੋਜੋ..." class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" oninput="renderHistory()">
+            <div class="mb-5">
+                <input type="text" id="searchFilter" placeholder="🔍 ਨੋਟ ਜਾਂ ਲੱਛਣ ਖੋਜੋ..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 transition shadow-sm" oninput="renderHistory()">
             </div>
-            <button onclick="downloadPDF()" class="w-full sm:w-auto mb-4 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 justify-center shadow-sm transition">
-                <i class="fa-solid fa-file-pdf text-red-400"></i> PDF ਡਾਊਨਲੋਡ ਕਰੋ
+            <button onclick="downloadPDF()" class="w-full mb-5 bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 text-white px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2 justify-center shadow-md transition">
+                <i class="fa-solid fa-file-pdf text-red-400 text-lg"></i> PDF ਡਾਊਨਲੋਡ ਕਰੋ
             </button>
             <div id="historyContainer"></div>
             <div id="emptyState" class="hidden text-center py-10 text-gray-400">
-                <i class="fa-regular fa-folder-open text-3xl mb-2"></i><br>ਕੋਈ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ।
+                <i class="fa-regular fa-folder-open text-4xl mb-3 text-gray-300"></i><br>ਕੋਈ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ।
             </div>
         </div>
     </div>
@@ -223,11 +216,11 @@ let selectedSymptoms = [];
 let editingId = null;
 
 const phaseData = [
-    { min:1, max:5, name:"ਮਾਹਵਾਰੀ (Menstruation)", arousal:"ਘੱਟ", color:"bg-red-50 text-red-800 border border-red-200", icon:"fa-droplet", tip:"ਹਲਕੀ ਕਸਰਤ ਕਰੋ, ਆਇਰਨ ਵਾਲਾ ਖਾਣਾ ਖਾਓ, ਆਰਾਮ ਕਰੋ।" },
-    { min:6, max:11, name:"ਫੋਲੀਕੂਲਰ (Follicular)", arousal:"ਵੱਧਦੀ", color:"bg-blue-50 text-blue-800 border border-blue-200", icon:"fa-arrow-trend-up", tip:"ਇਹ ਊਰਜਾ ਦਾ ਸਮਾਂ ਹੈ। ਨਵੇਂ ਕੰਮ ਸ਼ੁਰੂ ਕਰਨ ਦਾ ਵਧੀਆ ਵਕਤ।" },
-    { min:12, max:15, name:"ਓਵੂਲੇਸ਼ਨ (Ovulation)", arousal:"ਸਭ ਤੋਂ ਵੱਧ", color:"bg-pink-50 text-pink-800 border border-pink-200", icon:"fa-fire-flame-curved", tip:"ਤੁਸੀਂ ਸਭ ਤੋਂ ਵੱਧ ਊਰਜਾਵਾਨ ਹੋ। ਸਮਾਜਿਕ ਮੇਲਜੋਲ ਲਈ ਵਧੀਆ ਸਮਾਂ।" },
-    { min:16, max:23, name:"ਲੂਟੀਅਲ (Luteal Phase)", arousal:"ਘੱਟਦੀ", color:"bg-purple-50 text-purple-800 border border-purple-200", icon:"fa-arrow-trend-down", tip:"ਸ਼ਾਂਤ ਰਹੋ। ਮੈਗਨੀਸ਼ੀਅਮ ਅਤੇ ਵਿਟਾਮਿਨ B6 ਖਾਓ।" },
-    { min:24, max:35, name:"PMS ਸਮਾਂ", arousal:"ਬਹੁਤ ਘੱਟ", color:"bg-orange-50 text-orange-800 border border-orange-200", icon:"fa-battery-quarter", tip:"ਨਮਕ ਅਤੇ ਕੈਫ਼ੀਨ ਘੱਟ ਕਰੋ। ਗਰਮ ਪਾਣੀ ਦੀ ਬੋਤਲ ਦਰਦ ਘੱਟ ਕਰੇਗੀ।" }
+    { min:1, max:5, name:"ਮਾਹਵਾਰੀ", arousal:"ਘੱਟ", color:"bg-red-50 text-red-800 border border-red-200", icon:"fa-droplet", tip:"ਹਲਕੀ ਕਸਰਤ ਕਰੋ, ਆਇਰਨ ਵਾਲਾ ਖਾਣਾ ਖਾਓ, ਆਰਾਮ ਕਰੋ।" },
+    { min:6, max:11, name:"ਫੋਲੀਕੂਲਰ", arousal:"ਵੱਧਦੀ", color:"bg-blue-50 text-blue-800 border border-blue-200", icon:"fa-arrow-trend-up", tip:"ਇਹ ਊਰਜਾ ਦਾ ਸਮਾਂ ਹੈ। ਨਵੇਂ ਕੰਮ ਸ਼ੁਰੂ ਕਰਨ ਦਾ ਵਧੀਆ ਵਕਤ।" },
+    { min:12, max:15, name:"ਓਵੂਲੇਸ਼ਨ", arousal:"ਸਭ ਤੋਂ ਵੱਧ", color:"bg-pink-50 text-pink-800 border border-pink-200", icon:"fa-fire-flame-curved", tip:"ਤੁਸੀਂ ਸਭ ਤੋਂ ਵੱਧ ਊਰਜਾਵਾਨ ਹੋ। ਸਮਾਜਿਕ ਮੇਲਜੋਲ ਲਈ ਵਧੀਆ ਸਮਾਂ।" },
+    { min:16, max:23, name:"ਲੂਟੀਅਲ", arousal:"ਘੱਟਦੀ", color:"bg-purple-50 text-purple-800 border border-purple-200", icon:"fa-arrow-trend-down", tip:"ਸ਼ਾਂਤ ਰਹੋ। ਮੈਗਨੀਸ਼ੀਅਮ ਅਤੇ ਵਿਟਾਮਿਨ B6 ਖਾਓ।" },
+    { min:24, max:35, name:"PMS", arousal:"ਬਹੁਤ ਘੱਟ", color:"bg-orange-50 text-orange-800 border border-orange-200", icon:"fa-battery-quarter", tip:"ਨਮਕ ਅਤੇ ਕੈਫ਼ੀਨ ਘੱਟ ਕਰੋ। ਗਰਮ ਪਾਣੀ ਦੀ ਬੋਤਲ ਦਰਦ ਘੱਟ ਕਰੇਗੀ।" }
 ];
 
 function daysDiff(d1, d2) {
@@ -237,11 +230,6 @@ function daysDiff(d1, d2) {
 }
 function fmtDate(ds) {
     return new Date(ds+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-}
-function addDays(ds, n) {
-    const d = new Date(ds+'T00:00:00');
-    d.setDate(d.getDate()+n);
-    return d.toISOString().split('T')[0];
 }
 function getPhase(day) {
     return phaseData.find(p=>day>=p.min&&day<=p.max) || { name:"ਦੇਰੀ (Late)", arousal:"ਅਨਿਸ਼ਚਿਤ", color:"bg-orange-50 text-orange-800 border border-orange-200", icon:"fa-clock", tip:"ਪੀਰੀਅਡਸ ਦੇਰ ਨਾਲ ਆ ਰਹੇ ਹਨ। ਜੇ ਵੱਧ ਦੇਰ ਹੋ ਜਾਵੇ ਤਾਂ ਡਾਕਟਰ ਨਾਲ ਗੱਲ ਕਰੋ।" };
@@ -321,7 +309,7 @@ function switchTab(name) {
     btns[idx].classList.add('active'); btns[idx].classList.remove('text-gray-500');
     if(name==='history'){ populateYearFilter(); renderHistory(); }
     if(name==='stats') renderStats();
-    if(name==='dashboard') { renderDashboard(); renderPrediction(); }
+    if(name==='dashboard') { renderDashboard(); }
 }
 
 function selectMood(btn) { document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedMood = btn.dataset.mood; }
@@ -361,7 +349,6 @@ function renderDashboard() {
     const dash = document.getElementById('statusDashboard');
     if(cycles.length===0){
         dash.innerHTML=`<div class="text-center py-6 text-gray-500"><i class="fa-solid fa-plus-circle text-3xl mb-2 text-pink-300"></i><br>ਹਾਲੇ ਕੋਈ ਡਾਟਾ ਨਹੀਂ। <span class="text-pink-600 font-semibold cursor-pointer" onclick="switchTab('add')">ਪਹਿਲਾ ਰਿਕਾਰਡ ਦਰਜ ਕਰੋ →</span></div>`;
-        document.getElementById('predictionArea').innerHTML='<p class="text-sm text-gray-400">ਡਾਟਾ ਪਾਉਣ ਤੋਂ ਬਾਅਦ ਭਵਿੱਖਬਾਣੀ ਦਿਖੇਗੀ।</p>';
         document.getElementById('healthTip').innerHTML='<p class="text-gray-400">ਡਾਟਾ ਦਰਜ ਕਰੋ।</p>';
         return;
     }
@@ -383,10 +370,9 @@ function renderDashboard() {
                 </svg>
             </div>
             <div class="flex-1 w-full space-y-2">
-                <div class="flex justify-between items-center bg-pink-50 rounded-xl px-4 py-2.5 border border-pink-100"><span class="text-sm text-gray-600">ਪਿਛਲੀ ਮਾਹਵਾਰੀ</span><span class="font-bold text-pink-700 text-sm">${fmtDate(last.date)}</span></div>
-                <div class="flex justify-between items-center bg-purple-50 rounded-xl px-4 py-2.5 border border-purple-100"><span class="text-sm text-gray-600">ਔਸਤ ਚੱਕਰ</span><span class="font-bold text-purple-700 text-sm">${avg} ਦਿਨ</span></div>
-                <div class="flex justify-between items-center bg-blue-50 rounded-xl px-4 py-2.5 border border-blue-100"><span class="text-sm text-gray-600">ਅਗਲੇ ਪੀਰੀਅਡ ਤੱਕ</span><span class="font-bold text-blue-700 text-sm">${daysLeft} ਦਿਨ</span></div>
-                ${last.mood ? `<div class="flex justify-between items-center bg-gray-50 rounded-xl px-4 py-2.5 border border-gray-100"><span class="text-sm text-gray-600">ਪਿਛਲਾ ਮੂਡ</span><span class="font-semibold text-sm">${last.mood}</span></div>` : ''}
+                <div class="flex justify-between items-center bg-pink-50 rounded-xl px-4 py-3 border border-pink-100"><span class="text-sm text-gray-600">ਪਿਛਲੀ ਮਾਹਵਾਰੀ</span><span class="font-bold text-pink-700 text-sm">${fmtDate(last.date)}</span></div>
+                <div class="flex justify-between items-center bg-purple-50 rounded-xl px-4 py-3 border border-purple-100"><span class="text-sm text-gray-600">ਔਸਤ ਚੱਕਰ</span><span class="font-bold text-purple-700 text-sm">${avg} ਦਿਨ</span></div>
+                <div class="flex justify-between items-center bg-blue-50 rounded-xl px-4 py-3 border border-blue-100"><span class="text-sm text-gray-600">ਅਗਲੇ ਪੀਰੀਅਡ ਤੱਕ</span><span class="font-bold text-blue-700 text-sm">${daysLeft} ਦਿਨ</span></div>
             </div>
         </div>
         <div class="${phase.color} rounded-xl p-4 flex flex-col gap-2">
@@ -400,26 +386,6 @@ function renderDashboard() {
     document.getElementById('healthTip').innerHTML = `<div class="flex gap-3"><i class="fa-solid fa-leaf text-green-500 text-lg mt-0.5"></i><p>${phase.tip}</p></div>`;
 }
 
-function renderPrediction() {
-    const area = document.getElementById('predictionArea');
-    if(cycles.length===0){ area.innerHTML=''; return; }
-    const avg = avgCycleLength(); const lastDate = cycles[0].date;
-    const months = ['ਜਨਵਰੀ','ਫਰਵਰੀ','ਮਾਰਚ','ਅਪ੍ਰੈਲ','ਮਈ','ਜੂਨ','ਜੁਲਾਈ','ਅਗਸਤ','ਸਤੰਬਰ','ਅਕਤੂਬਰ','ਨਵੰਬਰ','ਦਸੰਬਰ'];
-    let html='';
-    for(let i=1;i<=3;i++){
-        const pred = addDays(lastDate, avg*i);
-        const predDate = new Date(pred+'T00:00:00');
-        const today = new Date(); today.setHours(0,0,0,0);
-        const daysTo = Math.ceil((predDate-today)/(1000*60*60*24));
-        const label = daysTo<0 ? `${Math.abs(daysTo)} ਦਿਨ ਪਹਿਲਾਂ` : daysTo===0 ? 'ਅੱਜ' : `${daysTo} ਦਿਨ ਬਾਅਦ`;
-        html += `<div class="flex justify-between items-center bg-blue-50 rounded-xl px-4 py-3 border border-blue-100">
-            <div><p class="text-xs text-blue-500 font-semibold">ਚੱਕਰ ${i}</p><p class="font-bold text-blue-800">${predDate.getDate()} ${months[predDate.getMonth()]} ${predDate.getFullYear()}</p></div>
-            <span class="text-xs font-bold ${daysTo<=3&&daysTo>=0?'text-red-600 bg-red-100 border border-red-200':'text-blue-600 bg-white border border-blue-200'} px-3 py-1.5 rounded-full">${label}</span>
-        </div>`;
-    }
-    area.innerHTML = html;
-}
-
 function populateYearFilter() {
     const f = document.getElementById('yearFilter'); const prev = f.value;
     const years = [...new Set(cycles.map(c=>new Date(c.date).getFullYear()))].sort((a,b)=>b-a);
@@ -428,6 +394,7 @@ function populateYearFilter() {
     if(years.includes(parseInt(prev))) f.value=prev;
 }
 
+// ਨਵਾਂ ਅਤੇ ਸਾਫ਼ ਟੇਬਲ ਡਿਜ਼ਾਈਨ
 function renderHistory() {
     const cont = document.getElementById('historyContainer');
     const fy = document.getElementById('yearFilter').value, fm = document.getElementById('monthFilter').value;
@@ -456,28 +423,50 @@ function renderHistory() {
         else if(c.status==='late') badge='<span class="badge badge-late">ਲੇਟ</span>';
         else if(c.status==='normal') badge='<span class="badge badge-normal">ਨਾਰਮਲ</span>';
         else badge='<span class="badge badge-first">ਪਹਿਲਾ</span>';
-        const len = c.cycleLength ? `<span class="font-bold">${c.cycleLength}</span>` : '-';
-        const moodFlow = [c.mood?`${c.mood}`:'', c.flow?`${c.flow}`:''].filter(Boolean).join(' | ');
-        rows += `<tr class="border-b hover:bg-pink-50 transition">
-            <td class="px-3 py-3 font-bold text-gray-500 text-sm">${num}</td>
-            <td class="px-3 py-3 text-sm font-medium">${fmtDate(c.date)}</td>
-            <td class="px-3 py-3 text-sm">${len}</td>
-            <td class="px-3 py-3">${badge}</td>
-            <td class="px-3 py-3 text-sm text-gray-500">${moodFlow}</td>
-            <td class="px-3 py-3">
-                <div class="flex items-center gap-2">
-                    <button class="text-blue-500 hover:text-blue-700 text-xs font-bold" onclick="editEntry('${c.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
-                    <button class="delete-btn text-red-400 hover:text-red-600 text-xs font-bold" onclick="deleteEntry('${c.id}')"><i class="fa-solid fa-trash"></i></button>
+        
+        const len = c.cycleLength ? `<span class="font-black text-gray-700">${c.cycleLength}</span>` : '<span class="text-gray-300">-</span>';
+        
+        // ਮੂਡ ਅਤੇ ਫਲੋਅ ਲਈ ਸੁੰਦਰ ਬੈਜ
+        let moodBadge = c.mood ? `<span class="bg-indigo-50 text-indigo-700 px-2 py-1 rounded-md text-xs font-semibold border border-indigo-100 shadow-sm">${c.mood}</span>` : '';
+        let flowBadge = c.flow ? `<span class="bg-teal-50 text-teal-700 px-2 py-1 rounded-md text-xs font-semibold border border-teal-100 shadow-sm">${c.flow}</span>` : '';
+        const moodFlow = `<div class="flex flex-wrap gap-1.5">${moodBadge}${flowBadge}</div>`;
+
+        rows += `<tr class="border-b border-gray-100 hover:bg-pink-50 transition duration-150 bg-white">
+            <td class="px-4 py-4 font-bold text-gray-400 text-sm">${num}</td>
+            <td class="px-4 py-4 text-sm font-bold text-gray-800 whitespace-nowrap">${fmtDate(c.date)}</td>
+            <td class="px-4 py-4 text-sm text-center">${len}</td>
+            <td class="px-4 py-4 whitespace-nowrap">${badge}</td>
+            <td class="px-4 py-4">${moodFlow}</td>
+            <td class="px-4 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                    <button class="text-blue-500 hover:text-blue-700 hover:bg-blue-50 h-8 w-8 rounded-lg flex items-center justify-center transition" onclick="editEntry('${c.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="text-red-400 hover:text-red-600 hover:bg-red-50 h-8 w-8 rounded-lg flex items-center justify-center transition" onclick="deleteEntry('${c.id}')"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </td>
         </tr>`;
+        
         if(c.symptoms&&c.symptoms.length>0||c.note){
             const info = [c.symptoms&&c.symptoms.length>0?c.symptoms.join(', '):'', c.note?`"${c.note}"`:''].filter(Boolean).join(' | ');
-            rows+=`<tr class="note-row"><td></td><td colspan="5" class="px-3 pb-2 text-xs text-gray-400">📝 ${info}</td></tr>`;
+            rows+=`<tr class="bg-gray-50 border-b border-gray-100"><td colspan="6" class="px-5 py-3 text-xs text-gray-500 font-medium tracking-wide">📝 ${info}</td></tr>`;
         }
     });
-    cont.innerHTML=`<div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
-        <table class="w-full text-sm text-left text-gray-600 min-w-max"><thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b"><tr><th class="px-3 py-3">ਲੜੀ</th><th class="px-3 py-3">ਤਰੀਕ</th><th class="px-3 py-3 whitespace-nowrap">ਚੱਕਰ (ਦਿਨ)</th><th class="px-3 py-3">ਸਥਿਤੀ</th><th class="px-3 py-3">ਮੂਡ/ਫਲੋਅ</th><th class="px-3 py-3"></th></tr></thead><tbody>${rows}</tbody></table>
+    
+    cont.innerHTML=`<div class="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm bg-white">
+        <table class="w-full text-sm text-left text-gray-600 min-w-max border-collapse">
+            <thead class="text-xs text-gray-500 uppercase bg-gray-100 border-b border-gray-200">
+                <tr>
+                    <th class="px-4 py-4 font-bold tracking-wider">ਲੜੀ</th>
+                    <th class="px-4 py-4 font-bold tracking-wider">ਤਰੀਕ</th>
+                    <th class="px-4 py-4 font-bold tracking-wider text-center">ਚੱਕਰ (ਦਿਨ)</th>
+                    <th class="px-4 py-4 font-bold tracking-wider">ਸਥਿਤੀ</th>
+                    <th class="px-4 py-4 font-bold tracking-wider">ਮੂਡ / ਫਲੋਅ</th>
+                    <th class="px-4 py-4 font-bold tracking-wider text-right">ਐਕਸ਼ਨ</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                ${rows}
+            </tbody>
+        </table>
     </div>`;
 }
 
@@ -513,7 +502,6 @@ function renderStats() {
     `;
 }
 
-// ਨਵੀਂ PDF ਲਾਇਬ੍ਰੇਰੀ (html2pdf) ਨਾਲ ਪੰਜਾਬੀ ਸਪੋਰਟ ਵਾਲਾ ਫੰਕਸ਼ਨ
 function downloadPDF() {
     if(cycles.length===0){ showToast('⚠️ ਕੋਈ ਡਾਟਾ ਨਹੀਂ'); return; }
     showToast('⏳ PDF ਤਿਆਰ ਹੋ ਰਿਹਾ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ...');
@@ -530,10 +518,9 @@ function downloadPDF() {
         return ym&&mm&&sm;
     });
 
-    // PDF ਬਣਾਉਣ ਲਈ ਅਸਥਾਈ HTML ਤਿਆਰ ਕਰਨਾ
     let htmlStr = `
         <div id="pdfExport" style="padding: 30px; font-family: 'Noto Sans Gurmukhi', sans-serif; background-color: white;">
-            <h2 style="text-align:center; color:#be185d; font-size: 24px; margin-bottom: 5px;">ਮਾਹਵਾਰੀ ਅਤੇ ਸਿਹਤ ਟਰੈਕਰ (Health Tracker)</h2>
+            <h2 style="text-align:center; color:#be185d; font-size: 24px; margin-bottom: 5px;">Periods (ਸਿਹਤ ਟਰੈਕਰ)</h2>
             <p style="text-align:center; color:#6b7280; font-size:14px; margin-bottom: 20px;">ਜਨਰੇਟ ਕੀਤਾ ਗਿਆ: ${new Date().toLocaleDateString('en-IN')}</p>
             <table style="width:100%; border-collapse: collapse; font-size:14px; text-align: left;">
                 <thead>
@@ -579,7 +566,7 @@ function downloadPDF() {
 
     const opt = {
         margin:       10,
-        filename:     'Period_Health_Record.pdf',
+        filename:     'Periods_Record.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
@@ -599,7 +586,7 @@ function exportJSON() {
     const blob = new Blob([JSON.stringify(cycles,null,2)],{type:'application/json'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'period_backup_'+new Date().toISOString().split('T')[0]+'.json';
+    a.download = 'periods_backup_'+new Date().toISOString().split('T')[0]+'.json';
     a.click();
     showToast('✅ ਬੈਕਅੱਪ ਡਾਊਨਲੋਡ ਹੋਇਆ');
 }
@@ -628,7 +615,6 @@ window.onload = () => {
     setFormMode(false);
     sortAndProcess();
     renderDashboard();
-    renderPrediction();
 };
 </script>
 </body>
