@@ -4,11 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ਮਾਹਵਾਰੀ ਅਤੇ ਸਿਹਤ ਟਰੈਕਰ</title>
+    
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#ec4899">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- ਮੋਬਾਇਲ-ਫ੍ਰੈਂਡਲੀ PDF: jsPDF + autoTable -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -43,7 +47,6 @@
 </head>
 <body class="text-gray-800 antialiased pb-12">
 
-<!-- ਹੈਡਰ -->
 <header class="bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg py-4 sticky top-0 z-50">
     <div class="container mx-auto px-4 flex justify-between items-center max-w-5xl">
         <h1 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-heart-pulse"></i> ਸਿਹਤ ਟਰੈਕਰ</h1>
@@ -61,7 +64,6 @@
 
 <main class="container mx-auto px-3 mt-5 max-w-5xl">
 
-    <!-- ਟੈਬਸ -->
     <div class="flex gap-2 mb-5 bg-white rounded-2xl p-1.5 shadow-sm border border-pink-100">
         <button class="tab-btn active flex-1 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5" onclick="switchTab('dashboard')">
             <i class="fa-solid fa-gauge-high"></i> ਡੈਸ਼ਬੋਰਡ
@@ -77,36 +79,29 @@
         </button>
     </div>
 
-    <!-- ===== ਟੈਬ 1: ਡੈਸ਼ਬੋਰਡ ===== -->
     <div id="tab-dashboard" class="space-y-4">
-        <!-- ਮੌਜੂਦਾ ਸਥਿਤੀ -->
         <div class="glass rounded-2xl p-5 border-t-4 border-pink-500">
             <h2 class="text-lg font-bold text-pink-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-calendar-day"></i> ਮੌਜੂਦਾ ਸਥਿਤੀ</h2>
             <div id="statusDashboard"><div class="text-center py-6 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-2xl"></i></div></div>
         </div>
-        <!-- ਅਗਲੇ 3 ਮਹੀਨੇ ਦੀ ਭਵਿੱਖਬਾਣੀ -->
         <div class="glass rounded-2xl p-5 border-t-4 border-blue-400">
             <h2 class="text-lg font-bold text-blue-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-calendar-check"></i> ਆਉਣ ਵਾਲੀਆਂ ਤਾਰੀਖਾਂ (Prediction)</h2>
             <div id="predictionArea" class="space-y-2"></div>
         </div>
-        <!-- ਸਿਹਤ ਸੁਝਾਅ -->
         <div class="glass rounded-2xl p-5 border-t-4 border-green-400">
             <h2 class="text-lg font-bold text-green-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-lightbulb"></i> ਅੱਜ ਦਾ ਸਿਹਤ ਸੁਝਾਅ</h2>
             <div id="healthTip" class="text-sm text-gray-600 leading-relaxed"></div>
         </div>
     </div>
 
-    <!-- ===== ਟੈਬ 2: ਡਾਟਾ ਦਰਜ ===== -->
     <div id="tab-add" class="hidden space-y-4">
         <div class="glass rounded-2xl p-5 border-t-4 border-purple-500">
             <h2 id="addFormTitle" class="text-lg font-bold text-purple-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-plus-circle"></i> ਨਵੀਂ ਤਰੀਕ ਦਰਜ ਕਰੋ</h2>
             <div class="space-y-4">
-                <!-- ਤਰੀਕ -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">ਪੀਰੀਅਡ ਸ਼ੁਰੂ ਹੋਣ ਦੀ ਤਰੀਕ:</label>
                     <input type="date" id="periodDate" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-400 focus:outline-none transition text-base">
                 </div>
-                <!-- ਫਲੋਅ ਦੀ ਮਾਤਰਾ -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">ਫਲੋਅ ਦੀ ਮਾਤਰਾ (Flow):</label>
                     <div class="flex gap-2 flex-wrap">
@@ -115,13 +110,11 @@
                         <button class="flow-btn" data-flow="ਭਾਰਾ (Heavy)" onclick="selectFlow(this)">💧💧💧 ਭਾਰਾ</button>
                     </div>
                 </div>
-                <!-- ਦਰਦ ਦੀ ਤੀਬਰਤਾ -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">ਦਰਦ ਦੀ ਤੀਬਰਤਾ (Pain): <span id="painLabel" class="text-purple-600">0 / 10</span></label>
                     <input type="range" id="painLevel" min="0" max="10" value="0" class="w-full accent-pink-500" oninput="document.getElementById('painLabel').textContent=this.value+' / 10'">
                     <div class="flex justify-between text-xs text-gray-400 mt-1"><span>ਕੋਈ ਨਹੀਂ</span><span>ਬਹੁਤ ਜ਼ਿਆਦਾ</span></div>
                 </div>
-                <!-- ਮੂਡ -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">ਮੂਡ (Mood):</label>
                     <div class="flex gap-2 flex-wrap">
@@ -133,7 +126,6 @@
                         <button class="mood-btn" data-mood="ਚਿੰਤਤ (Anxious)" onclick="selectMood(this)">😰</button>
                     </div>
                 </div>
-                <!-- ਲੱਛਣ -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">ਲੱਛਣ (Symptoms):</label>
                     <div class="flex flex-wrap gap-2" id="symptomChips">
@@ -149,7 +141,6 @@
                         <span class="symptom-chip" onclick="toggleSymptom(this)">🫀 ਛਾਤੀ ਵਿੱਚ ਦਰਦ</span>
                     </div>
                 </div>
-                <!-- ਨੋਟ -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">ਨੋਟ (Note):</label>
                     <textarea id="periodNote" rows="2" placeholder="ਕੋਈ ਵਾਧੂ ਜਾਣਕਾਰੀ..." class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-400 focus:outline-none transition text-sm resize-none"></textarea>
@@ -167,10 +158,8 @@
         </div>
     </div>
 
-    <!-- ===== ਟੈਬ 3: ਰਿਕਾਰਡ ===== -->
     <div id="tab-history" class="hidden space-y-4">
         <div class="glass rounded-2xl p-4">
-            <!-- ਫਿਲਟਰ -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
                 <select id="yearFilter" onchange="renderHistory()" class="bg-white border border-gray-200 text-gray-800 text-sm rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-pink-300 shadow-sm">
                     <option value="all">ਸਾਰੇ ਸਾਲ</option>
@@ -195,15 +184,12 @@
                     <option value="ਭਾਰਾ (Heavy)">ਭਾਰਾ</option>
                 </select>
             </div>
-            <!-- ਸਰਚ -->
             <div class="mb-3">
                 <input type="text" id="searchFilter" placeholder="🔍 ਨੋਟ ਜਾਂ ਲੱਛਣ ਖੋਜੋ..." class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" oninput="renderHistory()">
             </div>
-            <!-- PDF ਬਟਨ -->
             <button onclick="downloadPDF()" class="w-full sm:w-auto mb-4 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 justify-center shadow-sm transition">
                 <i class="fa-solid fa-file-pdf text-red-400"></i> PDF ਡਾਊਨਲੋਡ ਕਰੋ
             </button>
-            <!-- ਟੇਬਲ -->
             <div id="historyContainer"></div>
             <div id="emptyState" class="hidden text-center py-10 text-gray-400">
                 <i class="fa-regular fa-folder-open text-3xl mb-2"></i><br>ਕੋਈ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ।
@@ -211,25 +197,31 @@
         </div>
     </div>
 
-    <!-- ===== ਟੈਬ 4: ਅੰਕੜੇ ===== -->
     <div id="tab-stats" class="hidden space-y-4">
         <div id="statsContent"></div>
     </div>
 
 </main>
 
-<!-- ਟੋਸਟ ਨੋਟੀਫਿਕੇਸ਼ਨ -->
 <div id="toast"></div>
 
 <script>
-// ==================== ਡਾਟਾ ====================
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(registration => console.log('SW Registered'))
+        .catch(err => console.log('SW Registration failed: ', err));
+    });
+  }
+</script>
+
+<script>
 let cycles = JSON.parse(localStorage.getItem('periodTrackerData_v3')) || [];
 let selectedMood = '';
 let selectedFlow = '';
 let selectedSymptoms = [];
 let editingId = null;
 
-// ==================== ਫੇਜ਼ ਡਾਟਾ ====================
 const phaseData = [
     { min:1, max:5, name:"ਮਾਹਵਾਰੀ (Menstruation)", arousal:"ਘੱਟ", color:"bg-red-50 text-red-800 border border-red-200", icon:"fa-droplet", tip:"ਹਲਕੀ ਕਸਰਤ ਕਰੋ, ਆਇਰਨ ਵਾਲਾ ਖਾਣਾ ਖਾਓ, ਆਰਾਮ ਕਰੋ।" },
     { min:6, max:11, name:"ਫੋਲੀਕੂਲਰ (Follicular)", arousal:"ਵੱਧਦੀ", color:"bg-blue-50 text-blue-800 border border-blue-200", icon:"fa-arrow-trend-up", tip:"ਇਹ ਊਰਜਾ ਦਾ ਸਮਾਂ ਹੈ। ਨਵੇਂ ਕੰਮ ਸ਼ੁਰੂ ਕਰਨ ਦਾ ਵਧੀਆ ਵਕਤ।" },
@@ -238,7 +230,6 @@ const phaseData = [
     { min:24, max:35, name:"PMS ਸਮਾਂ", arousal:"ਬਹੁਤ ਘੱਟ", color:"bg-orange-50 text-orange-800 border border-orange-200", icon:"fa-battery-quarter", tip:"ਨਮਕ ਅਤੇ ਕੈਫ਼ੀਨ ਘੱਟ ਕਰੋ। ਗਰਮ ਪਾਣੀ ਦੀ ਬੋਤਲ ਦਰਦ ਘੱਟ ਕਰੇਗੀ।" }
 ];
 
-// ==================== ਮਦਦਗਾਰ ਫੰਕਸ਼ਨ ====================
 function daysDiff(d1, d2) {
     const a = new Date(d1), b = new Date(d2);
     a.setHours(0,0,0,0); b.setHours(0,0,0,0);
@@ -265,17 +256,9 @@ function setFormMode(isEditing) {
     const btn = document.getElementById('saveBtn');
     const cancel = document.getElementById('cancelEditBtn');
     const title = document.getElementById('addFormTitle');
-    if (btn) {
-        btn.innerHTML = isEditing
-            ? '<i class="fa-solid fa-pen-to-square"></i> ਰਿਕਾਰਡ ਅਪਡੇਟ ਕਰੋ'
-            : '<i class="fa-solid fa-save"></i> ਡਾਟਾ ਸੇਵ ਕਰੋ';
-    }
+    if (btn) btn.innerHTML = isEditing ? '<i class="fa-solid fa-pen-to-square"></i> ਰਿਕਾਰਡ ਅਪਡੇਟ ਕਰੋ' : '<i class="fa-solid fa-save"></i> ਡਾਟਾ ਸੇਵ ਕਰੋ';
     if (cancel) cancel.classList.toggle('hidden', !isEditing);
-    if (title) {
-        title.innerHTML = isEditing
-            ? '<i class="fa-solid fa-pen-to-square"></i> ਰਿਕਾਰਡ ਸੋਧੋ'
-            : '<i class="fa-solid fa-plus-circle"></i> ਨਵੀਂ ਤਰੀਕ ਦਰਜ ਕਰੋ';
-    }
+    if (title) title.innerHTML = isEditing ? '<i class="fa-solid fa-pen-to-square"></i> ਰਿਕਾਰਡ ਸੋਧੋ' : '<i class="fa-solid fa-plus-circle"></i> ਨਵੀਂ ਤਰੀਕ ਦਰਜ ਕਰੋ';
 }
 function resetForm() {
     editingId = null;
@@ -286,9 +269,7 @@ function resetForm() {
     document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
     document.querySelectorAll('.flow-btn').forEach(b=>b.classList.remove('selected'));
     document.querySelectorAll('.symptom-chip').forEach(b=>b.classList.remove('selected'));
-    selectedMood = '';
-    selectedFlow = '';
-    selectedSymptoms = [];
+    selectedMood = ''; selectedFlow = ''; selectedSymptoms = [];
     setFormMode(false);
 }
 function fillForm(entry) {
@@ -301,34 +282,23 @@ function fillForm(entry) {
     document.querySelectorAll('.flow-btn').forEach(b=>b.classList.remove('selected'));
     document.querySelectorAll('.symptom-chip').forEach(b=>b.classList.remove('selected'));
 
-    selectedMood = entry.mood || '';
-    selectedFlow = entry.flow || '';
+    selectedMood = entry.mood || ''; selectedFlow = entry.flow || '';
     selectedSymptoms = Array.isArray(entry.symptoms) ? [...entry.symptoms] : [];
 
-    document.querySelectorAll('.mood-btn').forEach(b=>{
-        if (b.dataset.mood === selectedMood) b.classList.add('selected');
-    });
-    document.querySelectorAll('.flow-btn').forEach(b=>{
-        if (b.dataset.flow === selectedFlow) b.classList.add('selected');
-    });
-    document.querySelectorAll('.symptom-chip').forEach(chip=>{
-        if (selectedSymptoms.includes(chip.textContent.trim())) chip.classList.add('selected');
-    });
+    document.querySelectorAll('.mood-btn').forEach(b=>{ if (b.dataset.mood === selectedMood) b.classList.add('selected'); });
+    document.querySelectorAll('.flow-btn').forEach(b=>{ if (b.dataset.flow === selectedFlow) b.classList.add('selected'); });
+    document.querySelectorAll('.symptom-chip').forEach(chip=>{ if (selectedSymptoms.includes(chip.textContent.trim())) chip.classList.add('selected'); });
 
     setFormMode(true);
     showToast('✏️ ਰਿਕਾਰਡ ਸੋਧਣ ਲਈ ਤਿਆਰ ਹੈ');
     switchTab('add');
 }
-function cancelEdit() {
-    resetForm();
-    showToast('✅ ਸੋਧ ਰੱਦ ਹੋ ਗਈ');
-}
+function cancelEdit() { resetForm(); showToast('✅ ਸੋਧ ਰੱਦ ਹੋ ਗਈ'); }
 function avgCycleLength() {
     const lens = cycles.filter(c=>c.cycleLength).map(c=>c.cycleLength);
     return lens.length ? Math.round(lens.reduce((a,b)=>a+b,0)/lens.length) : 28;
 }
 
-// ==================== ਡਾਟਾ ਪ੍ਰੋਸੈਸਿੰਗ ====================
 function sortAndProcess() {
     cycles.sort((a,b)=>new Date(b.date)-new Date(a.date));
     for(let i=0;i<cycles.length;i++){
@@ -340,47 +310,28 @@ function sortAndProcess() {
         } else { cycles[i].cycleLength=null; cycles[i].status='first'; }
     }
 }
-function saveData() {
-    sortAndProcess();
-    localStorage.setItem('periodTrackerData_v3', JSON.stringify(cycles));
-}
+function saveData() { sortAndProcess(); localStorage.setItem('periodTrackerData_v3', JSON.stringify(cycles)); }
 
-// ==================== ਟੈਬ ਸਵਿੱਚ ====================
 function switchTab(name) {
-    ['dashboard','add','history','stats'].forEach(t=>{
-        document.getElementById('tab-'+t).classList.add('hidden');
-    });
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.add('text-gray-500'));
+    ['dashboard','add','history','stats'].forEach(t=>document.getElementById('tab-'+t).classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.remove('active'); b.classList.add('text-gray-500'); });
     document.getElementById('tab-'+name).classList.remove('hidden');
     const idx = ['dashboard','add','history','stats'].indexOf(name);
     const btns = document.querySelectorAll('.tab-btn');
-    btns[idx].classList.add('active');
-    btns[idx].classList.remove('text-gray-500');
+    btns[idx].classList.add('active'); btns[idx].classList.remove('text-gray-500');
     if(name==='history'){ populateYearFilter(); renderHistory(); }
     if(name==='stats') renderStats();
     if(name==='dashboard') { renderDashboard(); renderPrediction(); }
 }
 
-// ==================== ਫਾਰਮ ਸਿਲੈਕਸ਼ਨ ====================
-function selectMood(btn) {
-    document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
-    btn.classList.add('selected');
-    selectedMood = btn.dataset.mood;
-}
-function selectFlow(btn) {
-    document.querySelectorAll('.flow-btn').forEach(b=>b.classList.remove('selected'));
-    btn.classList.add('selected');
-    selectedFlow = btn.dataset.flow;
-}
+function selectMood(btn) { document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedMood = btn.dataset.mood; }
+function selectFlow(btn) { document.querySelectorAll('.flow-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedFlow = btn.dataset.flow; }
 function toggleSymptom(chip) {
     chip.classList.toggle('selected');
     const t = chip.textContent.trim();
-    if(selectedSymptoms.includes(t)) selectedSymptoms = selectedSymptoms.filter(s=>s!==t);
-    else selectedSymptoms.push(t);
+    if(selectedSymptoms.includes(t)) selectedSymptoms = selectedSymptoms.filter(s=>s!==t); else selectedSymptoms.push(t);
 }
 
-// ==================== ਡਾਟਾ ਜੋੜਨਾ ====================
 function handleAddPeriod() {
     const dateInput = document.getElementById('periodDate').value;
     if(!dateInput){ showToast('⚠️ ਕਿਰਪਾ ਤਰੀਕ ਚੁਣੋ'); return; }
@@ -390,30 +341,22 @@ function handleAddPeriod() {
 
     const entry = {
         id: editingId || Date.now().toString(),
-        date: dateInput,
-        mood: selectedMood,
-        flow: selectedFlow,
+        date: dateInput, mood: selectedMood, flow: selectedFlow,
         pain: parseInt(document.getElementById('painLevel').value) || 0,
-        symptoms: [...selectedSymptoms],
-        note: document.getElementById('periodNote').value.trim()
+        symptoms: [...selectedSymptoms], note: document.getElementById('periodNote').value.trim()
     };
 
-    const wasEditing = !!editingId;
-    if (wasEditing) {
+    if (editingId) {
         const idx = cycles.findIndex(c => c.id === editingId);
         if (idx !== -1) cycles[idx] = entry;
         editingId = null;
-    } else {
-        cycles.push(entry);
-    }
+    } else cycles.push(entry);
 
-    saveData();
-    resetForm();
-    showToast(wasEditing ? '✅ ਰਿਕਾਰਡ ਅਪਡੇਟ ਹੋ ਗਿਆ!' : '✅ ਡਾਟਾ ਸੇਵ ਹੋ ਗਿਆ!');
+    saveData(); resetForm();
+    showToast(editingId ? '✅ ਰਿਕਾਰਡ ਅਪਡੇਟ ਹੋ ਗਿਆ!' : '✅ ਡਾਟਾ ਸੇਵ ਹੋ ਗਿਆ!');
     switchTab('history');
 }
 
-// ==================== ਡੈਸ਼ਬੋਰਡ ====================
 function renderDashboard() {
     const dash = document.getElementById('statusDashboard');
     if(cycles.length===0){
@@ -422,43 +365,27 @@ function renderDashboard() {
         document.getElementById('healthTip').innerHTML='<p class="text-gray-400">ਡਾਟਾ ਦਰਜ ਕਰੋ।</p>';
         return;
     }
-    const last = cycles[0];
-    const today = new Date().toISOString().split('T')[0];
-    const dayN = daysDiff(last.date, today)+1;
-    const phase = getPhase(dayN);
-    const avg = avgCycleLength();
-    const daysLeft = Math.max(0, avg - dayN + 1);
+    const last = cycles[0]; const today = new Date().toISOString().split('T')[0];
+    const dayN = daysDiff(last.date, today)+1; const phase = getPhase(dayN);
+    const avg = avgCycleLength(); const daysLeft = Math.max(0, avg - dayN + 1);
 
-    // ਸਰਕਲ ਪ੍ਰੋਗਰੈੱਸ
     const pct = Math.min(dayN/avg, 1);
-    const r=42, circ=2*Math.PI*r;
-    const offset = circ*(1-pct);
+    const r=42, circ=2*Math.PI*r; const offset = circ*(1-pct);
 
     dash.innerHTML = `
         <div class="flex flex-col sm:flex-row items-center gap-5 mb-4">
             <div class="flex-shrink-0">
                 <svg width="110" height="110">
                     <circle cx="55" cy="55" r="${r}" fill="none" stroke="#fce7f3" stroke-width="10"/>
-                    <circle class="progress-circle" cx="55" cy="55" r="${r}" fill="none" stroke="#ec4899" stroke-width="10"
-                        stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"
-                        style="transform-origin:55px 55px" class="progress-ring"/>
+                    <circle class="progress-circle" cx="55" cy="55" r="${r}" fill="none" stroke="#ec4899" stroke-width="10" stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round" style="transform-origin:55px 55px" class="progress-ring"/>
                     <text x="55" y="50" text-anchor="middle" fill="#be185d" font-size="20" font-weight="bold">ਦਿਨ</text>
                     <text x="55" y="72" text-anchor="middle" fill="#9d174d" font-size="26" font-weight="bold">${dayN}</text>
                 </svg>
             </div>
             <div class="flex-1 w-full space-y-2">
-                <div class="flex justify-between items-center bg-pink-50 rounded-xl px-4 py-2.5 border border-pink-100">
-                    <span class="text-sm text-gray-600">ਪਿਛਲੀ ਮਾਹਵਾਰੀ</span>
-                    <span class="font-bold text-pink-700 text-sm">${fmtDate(last.date)}</span>
-                </div>
-                <div class="flex justify-between items-center bg-purple-50 rounded-xl px-4 py-2.5 border border-purple-100">
-                    <span class="text-sm text-gray-600">ਔਸਤ ਚੱਕਰ</span>
-                    <span class="font-bold text-purple-700 text-sm">${avg} ਦਿਨ</span>
-                </div>
-                <div class="flex justify-between items-center bg-blue-50 rounded-xl px-4 py-2.5 border border-blue-100">
-                    <span class="text-sm text-gray-600">ਅਗਲੇ ਪੀਰੀਅਡ ਤੱਕ</span>
-                    <span class="font-bold text-blue-700 text-sm">${daysLeft} ਦਿਨ</span>
-                </div>
+                <div class="flex justify-between items-center bg-pink-50 rounded-xl px-4 py-2.5 border border-pink-100"><span class="text-sm text-gray-600">ਪਿਛਲੀ ਮਾਹਵਾਰੀ</span><span class="font-bold text-pink-700 text-sm">${fmtDate(last.date)}</span></div>
+                <div class="flex justify-between items-center bg-purple-50 rounded-xl px-4 py-2.5 border border-purple-100"><span class="text-sm text-gray-600">ਔਸਤ ਚੱਕਰ</span><span class="font-bold text-purple-700 text-sm">${avg} ਦਿਨ</span></div>
+                <div class="flex justify-between items-center bg-blue-50 rounded-xl px-4 py-2.5 border border-blue-100"><span class="text-sm text-gray-600">ਅਗਲੇ ਪੀਰੀਅਡ ਤੱਕ</span><span class="font-bold text-blue-700 text-sm">${daysLeft} ਦਿਨ</span></div>
                 ${last.mood ? `<div class="flex justify-between items-center bg-gray-50 rounded-xl px-4 py-2.5 border border-gray-100"><span class="text-sm text-gray-600">ਪਿਛਲਾ ਮੂਡ</span><span class="font-semibold text-sm">${last.mood}</span></div>` : ''}
             </div>
         </div>
@@ -476,8 +403,7 @@ function renderDashboard() {
 function renderPrediction() {
     const area = document.getElementById('predictionArea');
     if(cycles.length===0){ area.innerHTML=''; return; }
-    const avg = avgCycleLength();
-    const lastDate = cycles[0].date;
+    const avg = avgCycleLength(); const lastDate = cycles[0].date;
     const months = ['ਜਨਵਰੀ','ਫਰਵਰੀ','ਮਾਰਚ','ਅਪ੍ਰੈਲ','ਮਈ','ਜੂਨ','ਜੁਲਾਈ','ਅਗਸਤ','ਸਤੰਬਰ','ਅਕਤੂਬਰ','ਨਵੰਬਰ','ਦਸੰਬਰ'];
     let html='';
     for(let i=1;i<=3;i++){
@@ -487,18 +413,15 @@ function renderPrediction() {
         const daysTo = Math.ceil((predDate-today)/(1000*60*60*24));
         const label = daysTo<0 ? `${Math.abs(daysTo)} ਦਿਨ ਪਹਿਲਾਂ` : daysTo===0 ? 'ਅੱਜ' : `${daysTo} ਦਿਨ ਬਾਅਦ`;
         html += `<div class="flex justify-between items-center bg-blue-50 rounded-xl px-4 py-3 border border-blue-100">
-            <div><p class="text-xs text-blue-500 font-semibold">ਚੱਕਰ ${i}</p>
-            <p class="font-bold text-blue-800">${predDate.getDate()} ${months[predDate.getMonth()]} ${predDate.getFullYear()}</p></div>
+            <div><p class="text-xs text-blue-500 font-semibold">ਚੱਕਰ ${i}</p><p class="font-bold text-blue-800">${predDate.getDate()} ${months[predDate.getMonth()]} ${predDate.getFullYear()}</p></div>
             <span class="text-xs font-bold ${daysTo<=3&&daysTo>=0?'text-red-600 bg-red-100 border border-red-200':'text-blue-600 bg-white border border-blue-200'} px-3 py-1.5 rounded-full">${label}</span>
         </div>`;
     }
     area.innerHTML = html;
 }
 
-// ==================== ਰਿਕਾਰਡ ====================
 function populateYearFilter() {
-    const f = document.getElementById('yearFilter');
-    const prev = f.value;
+    const f = document.getElementById('yearFilter'); const prev = f.value;
     const years = [...new Set(cycles.map(c=>new Date(c.date).getFullYear()))].sort((a,b)=>b-a);
     f.innerHTML = '<option value="all">ਸਾਰੇ ਸਾਲ</option>';
     years.forEach(y=>f.innerHTML+=`<option value="${y}">${y}</option>`);
@@ -507,10 +430,8 @@ function populateYearFilter() {
 
 function renderHistory() {
     const cont = document.getElementById('historyContainer');
-    const fy = document.getElementById('yearFilter').value;
-    const fm = document.getElementById('monthFilter').value;
-    const fs = document.getElementById('statusFilter').value;
-    const ff = document.getElementById('flowFilter').value;
+    const fy = document.getElementById('yearFilter').value, fm = document.getElementById('monthFilter').value;
+    const fs = document.getElementById('statusFilter').value, ff = document.getElementById('flowFilter').value;
     const fq = document.getElementById('searchFilter').value.toLowerCase();
 
     let filtered = cycles.filter(c=>{
@@ -524,16 +445,13 @@ function renderHistory() {
     });
 
     if(filtered.length===0){
-        cont.innerHTML='';
-        document.getElementById('emptyState').classList.remove('hidden');
-        return;
+        cont.innerHTML=''; document.getElementById('emptyState').classList.remove('hidden'); return;
     }
     document.getElementById('emptyState').classList.add('hidden');
 
     let rows='';
     filtered.forEach((c,i)=>{
-        const num = filtered.length-i;
-        let badge='';
+        const num = filtered.length-i; let badge='';
         if(c.status==='early') badge='<span class="badge badge-early">ਜਲਦੀ</span>';
         else if(c.status==='late') badge='<span class="badge badge-late">ਲੇਟ</span>';
         else if(c.status==='normal') badge='<span class="badge badge-normal">ਨਾਰਮਲ</span>';
@@ -559,118 +477,51 @@ function renderHistory() {
         }
     });
     cont.innerHTML=`<div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
-        <table class="w-full text-sm text-left text-gray-600 min-w-max">
-            <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b">
-                <tr><th class="px-3 py-3">ਲੜੀ</th><th class="px-3 py-3">ਤਰੀਕ</th><th class="px-3 py-3 whitespace-nowrap">ਚੱਕਰ (ਦਿਨ)</th><th class="px-3 py-3">ਸਥਿਤੀ</th><th class="px-3 py-3">ਮੂਡ/ਫਲੋਅ</th><th class="px-3 py-3"></th></tr>
-            </thead>
-            <tbody>${rows}</tbody>
-        </table>
+        <table class="w-full text-sm text-left text-gray-600 min-w-max"><thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b"><tr><th class="px-3 py-3">ਲੜੀ</th><th class="px-3 py-3">ਤਰੀਕ</th><th class="px-3 py-3 whitespace-nowrap">ਚੱਕਰ (ਦਿਨ)</th><th class="px-3 py-3">ਸਥਿਤੀ</th><th class="px-3 py-3">ਮੂਡ/ਫਲੋਅ</th><th class="px-3 py-3"></th></tr></thead><tbody>${rows}</tbody></table>
     </div>`;
 }
 
-function editEntry(id) {
-    const entry = cycles.find(c => c.id === id);
-    if (!entry) return;
-    fillForm(entry);
-}
-
+function editEntry(id) { const entry = cycles.find(c => c.id === id); if (entry) fillForm(entry); }
 function deleteEntry(id) {
     if(!confirm('ਕੀ ਇਹ ਰਿਕਾਰਡ ਮਿਟਾਉਣਾ ਹੈ?')) return;
-    if (editingId === id) {
-        resetForm();
-    }
-    cycles = cycles.filter(c=>c.id!==id);
-    saveData();
-    renderHistory();
-    showToast('🗑️ ਰਿਕਾਰਡ ਮਿਟਾਇਆ ਗਿਆ');
+    if (editingId === id) resetForm();
+    cycles = cycles.filter(c=>c.id!==id); saveData(); renderHistory(); showToast('🗑️ ਰਿਕਾਰਡ ਮਿਟਾਇਆ ਗਿਆ');
 }
 
-// ==================== ਅੰਕੜੇ ====================
 function renderStats() {
     const cont = document.getElementById('statsContent');
     if(cycles.length<2){
-        cont.innerHTML=`<div class="glass rounded-2xl p-6 text-center text-gray-400"><i class="fa-solid fa-chart-pie text-4xl mb-3 text-pink-200"></i><br>ਅੰਕੜਿਆਂ ਲਈ ਘੱਟੋ-ਘੱਟ 2 ਰਿਕਾਰਡ ਚਾਹੀਦੇ ਹਨ।</div>`;
-        return;
+        cont.innerHTML=`<div class="glass rounded-2xl p-6 text-center text-gray-400"><i class="fa-solid fa-chart-pie text-4xl mb-3 text-pink-200"></i><br>ਅੰਕੜਿਆਂ ਲਈ ਘੱਟੋ-ਘੱਟ 2 ਰਿਕਾਰਡ ਚਾਹੀਦੇ ਹਨ।</div>`; return;
     }
     const lens = cycles.filter(c=>c.cycleLength).map(c=>c.cycleLength);
     const avg = lens.length ? (lens.reduce((a,b)=>a+b,0)/lens.length).toFixed(1) : '-';
-    const minL = lens.length ? Math.min(...lens) : '-';
-    const maxL = lens.length ? Math.max(...lens) : '-';
-    const early = cycles.filter(c=>c.status==='early').length;
-    const late = cycles.filter(c=>c.status==='late').length;
-    const normal = cycles.filter(c=>c.status==='normal').length;
-    // ਦਰਦ ਔਸਤ
+    const minL = lens.length ? Math.min(...lens) : '-'; const maxL = lens.length ? Math.max(...lens) : '-';
+    const early = cycles.filter(c=>c.status==='early').length; const late = cycles.filter(c=>c.status==='late').length; const normal = cycles.filter(c=>c.status==='normal').length;
     const painVals = cycles.filter(c=>c.pain!=null).map(c=>c.pain);
     const avgPain = painVals.length ? (painVals.reduce((a,b)=>a+b,0)/painVals.length).toFixed(1) : '-';
-    // ਲੱਛਣ ਕਾਊਂਟ
-    const symCount = {};
-    cycles.forEach(c=>{ if(c.symptoms) c.symptoms.forEach(s=>{ symCount[s]=(symCount[s]||0)+1; }); });
+    const symCount = {}; cycles.forEach(c=>{ if(c.symptoms) c.symptoms.forEach(s=>{ symCount[s]=(symCount[s]||0)+1; }); });
     const topSym = Object.entries(symCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    // ਮੂਡ ਕਾਊਂਟ
-    const moodCount = {};
-    cycles.forEach(c=>{ if(c.mood) moodCount[c.mood]=(moodCount[c.mood]||0)+1; });
+    const moodCount = {}; cycles.forEach(c=>{ if(c.mood) moodCount[c.mood]=(moodCount[c.mood]||0)+1; });
     const topMood = Object.entries(moodCount).sort((a,b)=>b[1]-a[1]).slice(0,4);
 
     cont.innerHTML=`
-        <div class="glass rounded-2xl p-5 border-t-4 border-pink-400 mb-4">
-            <h2 class="text-lg font-bold text-pink-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-bar"></i> ਚੱਕਰ ਦੇ ਅੰਕੜੇ</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                ${[['ਕੁੱਲ ਚੱਕਰ',cycles.length,'fa-circle-dot','pink'],['ਔਸਤ ਦਿਨ',avg,'fa-ruler','purple'],['ਸਭ ਤੋਂ ਛੋਟਾ',minL?minL+' ਦਿਨ':'-','fa-minimize','blue'],['ਸਭ ਤੋਂ ਲੰਮਾ',maxL?maxL+' ਦਿਨ':'-','fa-maximize','green']].map(([l,v,ic,cl])=>`
-                <div class="stat-card text-center"><i class="fa-solid ${ic} text-${cl}-400 text-xl mb-1"></i><p class="text-xs text-gray-400 mt-1">${l}</p><p class="text-2xl font-black text-gray-800">${v}</p></div>`).join('')}
-            </div>
-        </div>
-        <div class="glass rounded-2xl p-5 border-t-4 border-purple-400 mb-4">
-            <h2 class="text-lg font-bold text-purple-700 mb-4"><i class="fa-solid fa-pie-chart mr-2"></i>ਸਥਿਤੀ ਵੰਡ</h2>
-            <div class="grid grid-cols-3 gap-3">
-                ${[['ਨਾਰਮਲ',normal,'green','✅'],['ਜਲਦੀ',early,'yellow','⚡'],['ਲੇਟ',late,'orange','⏰']].map(([l,n,c,e])=>`
-                <div class="text-center bg-${c}-50 rounded-xl p-3 border border-${c}-100"><p class="text-2xl">${e}</p><p class="text-xl font-black text-${c}-700">${n}</p><p class="text-xs text-gray-500">${l}</p></div>`).join('')}
-            </div>
-        </div>
-        ${avgPain!=='-'?`<div class="glass rounded-2xl p-5 border-t-4 border-red-300 mb-4">
-            <h2 class="text-lg font-bold text-red-700 mb-3"><i class="fa-solid fa-gauge mr-2"></i>ਦਰਦ ਔਸਤ</h2>
-            <div class="flex items-center gap-4">
-                <div class="text-4xl font-black text-red-600">${avgPain}<span class="text-lg text-gray-400">/10</span></div>
-                <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden"><div class="h-3 bg-gradient-to-r from-green-400 to-red-500 rounded-full" style="width:${(avgPain/10*100).toFixed(0)}%"></div></div>
-            </div>
-        </div>`:''}
-        ${topSym.length>0?`<div class="glass rounded-2xl p-5 border-t-4 border-blue-300 mb-4">
-            <h2 class="text-lg font-bold text-blue-700 mb-3"><i class="fa-solid fa-stethoscope mr-2"></i>ਸਭ ਤੋਂ ਵੱਧ ਲੱਛਣ</h2>
-            <div class="space-y-2">${topSym.map(([s,n])=>`<div class="flex items-center gap-3"><span class="text-sm font-medium text-gray-700 w-36">${s}</span><div class="flex-1 h-2.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-2.5 bg-blue-400 rounded-full" style="width:${(n/cycles.length*100).toFixed(0)}%"></div></div><span class="text-xs text-gray-500 w-8 text-right">${n}x</span></div>`).join('')}</div>
-        </div>`:''}
-        ${topMood.length>0?`<div class="glass rounded-2xl p-5 border-t-4 border-yellow-300">
-            <h2 class="text-lg font-bold text-yellow-700 mb-3"><i class="fa-solid fa-face-smile mr-2"></i>ਮੂਡ ਅੰਕੜੇ</h2>
-            <div class="flex flex-wrap gap-2">${topMood.map(([m,n])=>`<span class="bg-yellow-50 border border-yellow-200 text-yellow-800 px-3 py-1.5 rounded-full text-sm font-semibold">${m} <strong>${n}</strong></span>`).join('')}</div>
-        </div>`:''}
+        <div class="glass rounded-2xl p-5 border-t-4 border-pink-400 mb-4"><h2 class="text-lg font-bold text-pink-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-bar"></i> ਚੱਕਰ ਦੇ ਅੰਕੜੇ</h2><div class="grid grid-cols-2 sm:grid-cols-4 gap-3">${[['ਕੁੱਲ ਚੱਕਰ',cycles.length,'fa-circle-dot','pink'],['ਔਸਤ ਦਿਨ',avg,'fa-ruler','purple'],['ਸਭ ਤੋਂ ਛੋਟਾ',minL?minL+' ਦਿਨ':'-','fa-minimize','blue'],['ਸਭ ਤੋਂ ਲੰਮਾ',maxL?maxL+' ਦਿਨ':'-','fa-maximize','green']].map(([l,v,ic,cl])=>`<div class="stat-card text-center"><i class="fa-solid ${ic} text-${cl}-400 text-xl mb-1"></i><p class="text-xs text-gray-400 mt-1">${l}</p><p class="text-2xl font-black text-gray-800">${v}</p></div>`).join('')}</div></div>
+        <div class="glass rounded-2xl p-5 border-t-4 border-purple-400 mb-4"><h2 class="text-lg font-bold text-purple-700 mb-4"><i class="fa-solid fa-pie-chart mr-2"></i>ਸਥਿਤੀ ਵੰਡ</h2><div class="grid grid-cols-3 gap-3">${[['ਨਾਰਮਲ',normal,'green','✅'],['ਜਲਦੀ',early,'yellow','⚡'],['ਲੇਟ',late,'orange','⏰']].map(([l,n,c,e])=>`<div class="text-center bg-${c}-50 rounded-xl p-3 border border-${c}-100"><p class="text-2xl">${e}</p><p class="text-xl font-black text-${c}-700">${n}</p><p class="text-xs text-gray-500">${l}</p></div>`).join('')}</div></div>
+        ${avgPain!=='-'?`<div class="glass rounded-2xl p-5 border-t-4 border-red-300 mb-4"><h2 class="text-lg font-bold text-red-700 mb-3"><i class="fa-solid fa-gauge mr-2"></i>ਦਰਦ ਔਸਤ</h2><div class="flex items-center gap-4"><div class="text-4xl font-black text-red-600">${avgPain}<span class="text-lg text-gray-400">/10</span></div><div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden"><div class="h-3 bg-gradient-to-r from-green-400 to-red-500 rounded-full" style="width:${(avgPain/10*100).toFixed(0)}%"></div></div></div></div>`:''}
+        ${topSym.length>0?`<div class="glass rounded-2xl p-5 border-t-4 border-blue-300 mb-4"><h2 class="text-lg font-bold text-blue-700 mb-3"><i class="fa-solid fa-stethoscope mr-2"></i>ਸਭ ਤੋਂ ਵੱਧ ਲੱਛਣ</h2><div class="space-y-2">${topSym.map(([s,n])=>`<div class="flex items-center gap-3"><span class="text-sm font-medium text-gray-700 w-36">${s}</span><div class="flex-1 h-2.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-2.5 bg-blue-400 rounded-full" style="width:${(n/cycles.length*100).toFixed(0)}%"></div></div><span class="text-xs text-gray-500 w-8 text-right">${n}x</span></div>`).join('')}</div></div>`:''}
+        ${topMood.length>0?`<div class="glass rounded-2xl p-5 border-t-4 border-yellow-300"><h2 class="text-lg font-bold text-yellow-700 mb-3"><i class="fa-solid fa-face-smile mr-2"></i>ਮੂਡ ਅੰਕੜੇ</h2><div class="flex flex-wrap gap-2">${topMood.map(([m,n])=>`<span class="bg-yellow-50 border border-yellow-200 text-yellow-800 px-3 py-1.5 rounded-full text-sm font-semibold">${m} <strong>${n}</strong></span>`).join('')}</div></div>`:''}
     `;
 }
 
-// ==================== PDF (ਮੋਬਾਇਲ-ਫ੍ਰੈਂਡਲੀ) ====================
+// ਨਵੀਂ PDF ਲਾਇਬ੍ਰੇਰੀ (html2pdf) ਨਾਲ ਪੰਜਾਬੀ ਸਪੋਰਟ ਵਾਲਾ ਫੰਕਸ਼ਨ
 function downloadPDF() {
     if(cycles.length===0){ showToast('⚠️ ਕੋਈ ਡਾਟਾ ਨਹੀਂ'); return; }
+    showToast('⏳ PDF ਤਿਆਰ ਹੋ ਰਿਹਾ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ...');
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-
-    // ਫੌਂਟ ਅਤੇ ਹੈਡਰ (ਅੰਗਰੇਜ਼ੀ - jsPDF ਵਿੱਚ ਪੰਜਾਬੀ ਯੂਨੀਕੋਡ ਦੀ ਲੋੜ ਨਹੀਂ)
-    doc.setFontSize(18);
-    doc.setTextColor(190, 24, 93);
-    doc.text('Period & Health Tracker', 105, 16, {align:'center'});
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text('Generated: '+new Date().toLocaleDateString('en-IN'), 105, 23, {align:'center'});
-    doc.line(14, 26, 196, 26);
-
-    // ਅੰਕੜੇ
-    const lens = cycles.filter(c=>c.cycleLength).map(c=>c.cycleLength);
-    const avg = lens.length ? (lens.reduce((a,b)=>a+b,0)/lens.length).toFixed(1) : '-';
-    doc.setFontSize(11);
-    doc.setTextColor(60);
-    doc.text(`Total Records: ${cycles.length}   |   Avg Cycle: ${avg} days   |   Normal: ${cycles.filter(c=>c.status==='normal').length}   |   Early: ${cycles.filter(c=>c.status==='early').length}   |   Late: ${cycles.filter(c=>c.status==='late').length}`, 14, 33);
-
-    // ਟੇਬਲ ਡਾਟਾ
     const fy = document.getElementById('yearFilter').value;
     const fm = document.getElementById('monthFilter').value;
     const fs = document.getElementById('statusFilter').value;
+    
     let filtered = cycles.filter(c=>{
         const d = new Date(c.date+'T00:00:00');
         const ym = fy==='all'||d.getFullYear().toString()===fy;
@@ -679,58 +530,71 @@ function downloadPDF() {
         return ym&&mm&&sm;
     });
 
-    const rows = filtered.map((c,i)=>{
-        const statusMap = { normal:'Normal', early:'Early', late:'Late', first:'First' };
-        return [
-            filtered.length-i,
-            fmtDate(c.date),
-            c.cycleLength ? c.cycleLength+' days' : '-',
-            statusMap[c.status]||'-',
-            c.flow||'-',
-            c.pain!=null ? c.pain+'/10' : '-',
-            c.mood ? c.mood.replace(/\(.*\)/,'').trim() : '-',
-            c.symptoms && c.symptoms.length ? c.symptoms.map(s=>s.replace(/.*\s/,'')).join(', ') : '-'
-        ];
+    // PDF ਬਣਾਉਣ ਲਈ ਅਸਥਾਈ HTML ਤਿਆਰ ਕਰਨਾ
+    let htmlStr = `
+        <div id="pdfExport" style="padding: 30px; font-family: 'Noto Sans Gurmukhi', sans-serif; background-color: white;">
+            <h2 style="text-align:center; color:#be185d; font-size: 24px; margin-bottom: 5px;">ਮਾਹਵਾਰੀ ਅਤੇ ਸਿਹਤ ਟਰੈਕਰ (Health Tracker)</h2>
+            <p style="text-align:center; color:#6b7280; font-size:14px; margin-bottom: 20px;">ਜਨਰੇਟ ਕੀਤਾ ਗਿਆ: ${new Date().toLocaleDateString('en-IN')}</p>
+            <table style="width:100%; border-collapse: collapse; font-size:14px; text-align: left;">
+                <thead>
+                    <tr style="background-color:#be185d; color:white;">
+                        <th style="padding:10px; border:1px solid #ddd;">#</th>
+                        <th style="padding:10px; border:1px solid #ddd;">ਤਰੀਕ</th>
+                        <th style="padding:10px; border:1px solid #ddd;">ਚੱਕਰ (ਦਿਨ)</th>
+                        <th style="padding:10px; border:1px solid #ddd;">ਸਥਿਤੀ</th>
+                        <th style="padding:10px; border:1px solid #ddd;">ਫਲੋਅ</th>
+                        <th style="padding:10px; border:1px solid #ddd;">ਦਰਦ</th>
+                        <th style="padding:10px; border:1px solid #ddd;">ਮੂਡ</th>
+                        <th style="padding:10px; border:1px solid #ddd;">ਲੱਛਣ</th>
+                        <th style="padding:10px; border:1px solid #ddd;">ਨੋਟ</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    filtered.forEach((c, i) => {
+        const statusMap = { normal:'ਨਾਰਮਲ', early:'ਜਲਦੀ', late:'ਲੇਟ', first:'ਪਹਿਲਾ' };
+        const symptomText = c.symptoms && c.symptoms.length ? c.symptoms.join(', ') : '-';
+        htmlStr += `
+            <tr style="${i % 2 === 0 ? 'background-color:#fdf2f8;' : 'background-color:#fff;'}">
+                <td style="padding:10px; border:1px solid #ddd;">${filtered.length - i}</td>
+                <td style="padding:10px; border:1px solid #ddd; white-space: nowrap;">${fmtDate(c.date)}</td>
+                <td style="padding:10px; border:1px solid #ddd;">${c.cycleLength ? c.cycleLength : '-'}</td>
+                <td style="padding:10px; border:1px solid #ddd;">${statusMap[c.status] || '-'}</td>
+                <td style="padding:10px; border:1px solid #ddd;">${c.flow || '-'}</td>
+                <td style="padding:10px; border:1px solid #ddd;">${c.pain != null ? c.pain + '/10' : '-'}</td>
+                <td style="padding:10px; border:1px solid #ddd;">${c.mood || '-'}</td>
+                <td style="padding:10px; border:1px solid #ddd;">${symptomText}</td>
+                <td style="padding:10px; border:1px solid #ddd;">${c.note || '-'}</td>
+            </tr>
+        `;
     });
+    htmlStr += `</tbody></table></div>`;
 
-    doc.autoTable({
-        startY: 38,
-        head: [['#','Date','Cycle','Status','Flow','Pain','Mood','Symptoms']],
-        body: rows,
-        styles: { fontSize:9, cellPadding:3, font:'helvetica' },
-        headStyles: { fillColor:[190,24,93], textColor:255, fontStyle:'bold' },
-        alternateRowStyles: { fillColor:[253,242,248] },
-        columnStyles: { 0:{cellWidth:8}, 1:{cellWidth:28}, 2:{cellWidth:18}, 3:{cellWidth:18}, 4:{cellWidth:18}, 5:{cellWidth:12}, 6:{cellWidth:22} },
-        theme: 'grid'
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlStr;
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.top = '-9999px';
+    document.body.appendChild(tempDiv);
+
+    const opt = {
+        margin:       10,
+        filename:     'Period_Health_Record.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
+
+    html2pdf().set(opt).from(tempDiv.firstElementChild).save().then(() => {
+        document.body.removeChild(tempDiv);
+        showToast('✅ PDF ਡਾਊਨਲੋਡ ਹੋ ਗਿਆ!');
+    }).catch(err => {
+        console.error('PDF Error:', err);
+        document.body.removeChild(tempDiv);
+        showToast('❌ PDF ਬਣਾਉਣ ਵਿੱਚ ਗਲਤੀ ਆਈ');
     });
-
-    // ਭਵਿੱਖਬਾਣੀ
-    if(cycles.length>=2){
-        const lastY = doc.lastAutoTable.finalY + 8;
-        doc.setFontSize(12); doc.setTextColor(59,130,246);
-        doc.text('Upcoming Predictions', 14, lastY);
-        const avgC = parseFloat(avg)||28;
-        const lastDate = cycles[0].date;
-        const pRows = [];
-        for(let i=1;i<=3;i++){
-            const pred = addDays(lastDate, Math.round(avgC)*i);
-            pRows.push([`Cycle ${i}`, fmtDate(pred)]);
-        }
-        doc.autoTable({
-            startY: lastY+4,
-            head: [['Cycle','Expected Date']],
-            body: pRows,
-            styles: { fontSize:9 },
-            headStyles: { fillColor:[59,130,246], textColor:255 },
-            theme:'grid'
-        });
-    }
-
-    doc.save('Period_Health_Record_'+new Date().toISOString().split('T')[0]+'.pdf');
-    showToast('✅ PDF ਡਾਊਨਲੋਡ ਹੋ ਗਿਆ!');
 }
 
-// ==================== ਬੈਕਅੱਪ / ਰਿਸਟੋਰ ====================
 function exportJSON() {
     const blob = new Blob([JSON.stringify(cycles,null,2)],{type:'application/json'});
     const a = document.createElement('a');
@@ -759,7 +623,6 @@ function importJSON(e) {
     e.target.value='';
 }
 
-// ==================== ਸ਼ੁਰੂਆਤ ====================
 window.onload = () => {
     document.getElementById('periodDate').max = new Date().toISOString().split('T')[0];
     setFormMode(false);
