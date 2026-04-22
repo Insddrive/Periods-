@@ -216,6 +216,12 @@ const phaseData = [
     { min:24, max:35, name:"PMS", arousal:"ਬਹੁਤ ਘੱਟ", color:"bg-orange-50 text-orange-800 border border-orange-200", icon:"fa-battery-quarter", tip:"ਨਮਕ ਅਤੇ ਕੈਫ਼ੀਨ ਘੱਟ ਕਰੋ। ਗਰਮ ਪਾਣੀ ਦੀ ਬੋਤਲ ਦਰਦ ਘੱਟ ਕਰੇਗੀ।" }
 ];
 
+function getLocalDate() {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().split('T')[0];
+}
+
 function daysDiff(d1, d2) {
     const a = new Date(d1), b = new Date(d2);
     a.setHours(0,0,0,0); b.setHours(0,0,0,0);
@@ -345,7 +351,8 @@ function renderDashboard() {
         document.getElementById('healthTip').innerHTML='<p class="text-gray-400">ਡਾਟਾ ਦਰਜ ਕਰੋ।</p>';
         return;
     }
-    const last = cycles[0]; const today = new Date().toISOString().split('T')[0];
+    const last = cycles[0]; 
+    const today = getLocalDate();
     const dayN = daysDiff(last.date, today)+1; const phase = getPhase(dayN);
     const avg = avgCycleLength(); 
 
@@ -492,7 +499,6 @@ function renderStats() {
     `;
 }
 
-// PDF ਨੂੰ ਪੇਜ-ਬ੍ਰੇਕ (Pagebreak) ਦੇ ਨਾਲ ਅਪਡੇਟ ਕੀਤਾ ਗਿਆ
 function downloadPDF() {
     if(cycles.length===0){ showToast('⚠️ ਕੋਈ ਡਾਟਾ ਨਹੀਂ'); return; }
     showToast('⏳ PDF ਤਿਆਰ ਹੋ ਰਿਹਾ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ...');
@@ -528,7 +534,6 @@ function downloadPDF() {
                 <tbody>
     `;
 
-    // ਪੇਜ-ਬ੍ਰੇਕ ਤੋਂ ਬਚਾਉਣ ਲਈ 'page-break-inside: avoid;' ਲਗਾਇਆ ਗਿਆ ਹੈ
     filtered.forEach((c, i) => {
         const statusMap = { normal:'ਨਾਰਮਲ', early:'ਜਲਦੀ', late:'ਲੇਟ', first:'ਪਹਿਲਾ' };
         const symptomText = c.symptoms && c.symptoms.length ? c.symptoms.join(', ') : '-';
@@ -554,7 +559,6 @@ function downloadPDF() {
     tempDiv.style.top = '-9999px';
     document.body.appendChild(tempDiv);
 
-    // html2pdf Options - Added pagebreak handling
     const opt = {
         margin:       10,
         filename:     'Periods_Record.pdf',
@@ -578,7 +582,7 @@ function exportJSON() {
     const blob = new Blob([JSON.stringify(cycles,null,2)],{type:'application/json'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'periods_backup_'+new Date().toISOString().split('T')[0]+'.json';
+    a.download = 'periods_backup_'+getLocalDate()+'.json';
     a.click();
     showToast('✅ ਬੈਕਅੱਪ ਡਾਊਨਲੋਡ ਹੋਇਆ');
 }
@@ -603,7 +607,7 @@ function importJSON(e) {
 }
 
 window.onload = () => {
-    document.getElementById('periodDate').max = new Date().toISOString().split('T')[0];
+    document.getElementById('periodDate').max = getLocalDate();
     setFormMode(false);
     sortAndProcess();
     renderDashboard();
