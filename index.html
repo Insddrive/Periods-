@@ -424,18 +424,20 @@ function renderHistory() {
         
         const len = c.cycleLength ? `<span class="font-black text-gray-700">${c.cycleLength}</span>` : '<span class="text-gray-300">-</span>';
         
-        let moodBadge = c.mood ? `<span class="bg-indigo-50 text-indigo-700 px-2 py-1 rounded-md text-xs font-semibold border border-indigo-100 shadow-sm">${c.mood}</span>` : '';
-        let flowBadge = c.flow ? `<span class="bg-teal-50 text-teal-700 px-2 py-1 rounded-md text-xs font-semibold border border-teal-100 shadow-sm">${c.flow}</span>` : '';
-        const moodFlow = `<div class="flex flex-wrap gap-1.5">${moodBadge}${flowBadge}</div>`;
+        let moodBadge = c.mood ? `<span class="bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-lg text-xs font-bold border border-indigo-200 shadow-sm">${c.mood}</span>` : '<span class="text-gray-300">-</span>';
+        let flowBadge = c.flow ? `<span class="bg-teal-100 text-teal-700 px-2.5 py-1 rounded-lg text-xs font-bold border border-teal-200 shadow-sm">${c.flow}</span>` : '<span class="text-gray-300">-</span>';
+        let painDisplay = c.pain != null ? `<span class="text-red-700 font-bold bg-red-100 px-2.5 py-1 rounded-lg text-xs border border-red-200 shadow-sm">${c.pain} <span class="text-red-400 opacity-80">/10</span></span>` : '<span class="text-gray-300">-</span>';
 
-        rows += `<tr class="border-b border-gray-100 hover:bg-pink-50 transition duration-150 bg-white">
-            <td class="px-4 py-4 font-bold text-gray-400 text-sm">${num}</td>
-            <td class="px-4 py-4 text-sm font-bold text-gray-800 whitespace-nowrap">${fmtDate(c.date)}</td>
-            <td class="px-4 py-4 text-sm text-center">${len}</td>
-            <td class="px-4 py-4 whitespace-nowrap">${badge}</td>
-            <td class="px-4 py-4">${moodFlow}</td>
-            <td class="px-4 py-4 text-right">
-                <div class="flex items-center justify-end gap-2">
+        rows += `<tr class="border-b border-gray-200 transition duration-150">
+            <td class="px-3 py-4 font-bold text-gray-500 text-sm text-center bg-gray-50">${num}</td>
+            <td class="px-3 py-4 text-sm font-bold text-gray-800 whitespace-nowrap bg-pink-50">${fmtDate(c.date)}</td>
+            <td class="px-3 py-4 text-sm text-center bg-purple-50">${len}</td>
+            <td class="px-3 py-4 whitespace-nowrap text-center bg-orange-50">${badge}</td>
+            <td class="px-3 py-4 text-center bg-teal-50">${flowBadge}</td>
+            <td class="px-3 py-4 text-center bg-red-50">${painDisplay}</td>
+            <td class="px-3 py-4 text-center bg-indigo-50">${moodBadge}</td>
+            <td class="px-3 py-4 text-right bg-white">
+                <div class="flex items-center justify-end gap-1.5">
                     <button class="text-blue-500 hover:text-blue-700 hover:bg-blue-50 h-8 w-8 rounded-lg flex items-center justify-center transition" onclick="editEntry('${c.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
                     <button class="text-red-400 hover:text-red-600 hover:bg-red-50 h-8 w-8 rounded-lg flex items-center justify-center transition" onclick="deleteEntry('${c.id}')"><i class="fa-solid fa-trash"></i></button>
                 </div>
@@ -444,20 +446,22 @@ function renderHistory() {
         
         if(c.symptoms&&c.symptoms.length>0||c.note){
             const info = [c.symptoms&&c.symptoms.length>0?c.symptoms.join(', '):'', c.note?`"${c.note}"`:''].filter(Boolean).join(' | ');
-            rows+=`<tr class="bg-gray-50 border-b border-gray-100"><td colspan="6" class="px-5 py-3 text-xs text-gray-500 font-medium tracking-wide">📝 ${info}</td></tr>`;
+            rows+=`<tr class="bg-gray-50 border-b border-gray-300"><td colspan="8" class="px-4 py-2.5 text-xs text-gray-500 font-medium tracking-wide border-l-4 border-pink-400">📝 ${info}</td></tr>`;
         }
     });
     
     cont.innerHTML=`<div class="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm bg-white">
         <table class="w-full text-sm text-left text-gray-600 min-w-max border-collapse">
-            <thead class="text-xs text-gray-500 uppercase bg-gray-100 border-b border-gray-200">
+            <thead class="text-xs text-gray-600 uppercase bg-gray-100 border-b border-gray-300">
                 <tr>
-                    <th class="px-4 py-4 font-bold tracking-wider">ਲੜੀ</th>
-                    <th class="px-4 py-4 font-bold tracking-wider">ਤਰੀਕ</th>
-                    <th class="px-4 py-4 font-bold tracking-wider text-center">ਚੱਕਰ (ਦਿਨ)</th>
-                    <th class="px-4 py-4 font-bold tracking-wider">ਸਥਿਤੀ</th>
-                    <th class="px-4 py-4 font-bold tracking-wider">ਮੂਡ / ਫਲੋਅ</th>
-                    <th class="px-4 py-4 font-bold tracking-wider text-right">ਐਕਸ਼ਨ</th>
+                    <th class="px-3 py-4 font-extrabold tracking-wider text-center bg-gray-200">ਲੜੀ</th>
+                    <th class="px-3 py-4 font-extrabold tracking-wider bg-pink-100">ਤਰੀਕ</th>
+                    <th class="px-3 py-4 font-extrabold tracking-wider text-center bg-purple-100">ਚੱਕਰ (ਦਿਨ)</th>
+                    <th class="px-3 py-4 font-extrabold tracking-wider text-center bg-orange-100">ਸਥਿਤੀ</th>
+                    <th class="px-3 py-4 font-extrabold tracking-wider text-center bg-teal-100">ਫਲੋਅ</th>
+                    <th class="px-3 py-4 font-extrabold tracking-wider text-center bg-red-100">ਦਰਦ</th>
+                    <th class="px-3 py-4 font-extrabold tracking-wider text-center bg-indigo-100">ਮੂਡ</th>
+                    <th class="px-3 py-4 font-extrabold tracking-wider text-right bg-white">ਐਕਸ਼ਨ</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
