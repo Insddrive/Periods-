@@ -1,7 +1,10 @@
-const CACHE_NAME = 'periods-v5';
+const CACHE_NAME = 'periods-v6';
 const APP_SHELL = [
   './',
-  './index.html'
+  './index.html',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
