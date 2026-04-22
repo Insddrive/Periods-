@@ -509,18 +509,27 @@ function downloadPDF() {
 
     const fy = document.getElementById('yearFilter').value;
     const fs = document.getElementById('statusFilter').value;
+    const ff = document.getElementById('flowFilter').value;
+    const fq = document.getElementById('searchFilter').value.toLowerCase();
     
     let filtered = cycles.filter(c=>{
         const d = new Date(c.date+'T00:00:00');
         const ym = fy==='all'||d.getFullYear().toString()===fy;
         const sm = fs==='all'||c.status===fs||(fs==='normal'&&c.status==='first');
-        return ym&&sm;
+        const flm = ff==='all'||c.flow===ff;
+        const qm = !fq || (c.note&&c.note.toLowerCase().includes(fq))||(c.symptoms&&c.symptoms.join(' ').toLowerCase().includes(fq));
+        return ym&&sm&&flm&&qm;
     });
 
+    if(filtered.length === 0){
+        showToast('⚠️ ਫਿਲਟਰ ਕੀਤੇ ਡਾਟੇ ਵਿੱਚ ਕੋਈ ਰਿਕਾਰਡ ਨਹੀਂ ਹੈ'); 
+        return;
+    }
+
     let htmlStr = `
-        <div id="pdfExport" style="padding: 20px; font-family: 'Noto Sans Gurmukhi', sans-serif; background-color: white;">
+        <div style="padding: 20px; font-family: 'Noto Sans Gurmukhi', sans-serif; background-color: white;">
             <h2 style="text-align:center; color:#be185d; font-size: 24px; margin-bottom: 5px;">Periods (ਸਿਹਤ ਟਰੈਕਰ)</h2>
-            <p style="text-align:center; color:#6b7280; font-size:14px; margin-bottom: 20px;">ਜਨਰੇਟ ਕੀਤਾ ਗਿਆ: ${new Date().toLocaleDateString('en-IN')}</p>
+            <p style="text-align:center; color:#6b7280; font-size:14px; margin-bottom: 20px;">ਜਨਰੇਟ ਕੀਤਾ ਗਿਆ: ${getLocalDate().split('-').reverse().join('-')}</p>
             <table style="width:100%; border-collapse: collapse; font-size:14px; text-align: left;">
                 <thead>
                     <tr style="background-color:#be185d; color:white;">
@@ -557,12 +566,6 @@ function downloadPDF() {
     });
     htmlStr += `</tbody></table></div>`;
 
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlStr;
-    tempDiv.style.position = 'absolute';
-    tempDiv.style.top = '-9999px';
-    document.body.appendChild(tempDiv);
-
     const opt = {
         margin:       10,
         filename:     'Periods_Record.pdf',
@@ -572,12 +575,10 @@ function downloadPDF() {
         pagebreak:    { mode: ['css', 'legacy'] }
     };
 
-    html2pdf().set(opt).from(tempDiv.firstElementChild).save().then(() => {
-        document.body.removeChild(tempDiv);
+    html2pdf().set(opt).from(htmlStr).save().then(() => {
         showToast('✅ PDF ਡਾਊਨਲੋਡ ਹੋ ਗਿਆ!');
     }).catch(err => {
         console.error('PDF Error:', err);
-        document.body.removeChild(tempDiv);
         showToast('❌ PDF ਬਣਾਉਣ ਵਿੱਚ ਗਲਤੀ ਆਈ');
     });
 }
