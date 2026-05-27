@@ -643,5 +643,27 @@ window.onload = () => {
     renderDashboard();
 };
 </script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+  import { getMessaging } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAZQSsBTBMR4dGBkyka5VhPGB0FZ3lVtjQ",
+    authDomain: "periods-pwa.firebaseapp.com",
+    projectId: "periods-pwa",
+    storageBucket: "periods-pwa.firebasestorage.app",
+    messagingSenderId: "1037007369851",
+    appId: "1:1037007369851:web:f109f4e0eb5def1830d4de",
+    measurementId: "G-S668TB4NJK"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const messaging = getMessaging(app);
+  
+  console.log("Firebase Successfully Connected!");
+</script>
 </body>
 </html>
