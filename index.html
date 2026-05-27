@@ -326,21 +326,26 @@ function handleAddPeriod() {
     const duplicate = cycles.some(c => c.date === dateInput && c.id !== editingId);
     if(duplicate){ showToast('⚠️ ਇਹ ਤਰੀਕ ਪਹਿਲਾਂ ਦਰਜ ਹੈ'); return; }
 
+    const newId = Date.now().toString(); // ਹਰੇਕ ਬਦਲਾਅ ਦੀ ਨਵੀਂ ਯੂਨੀਕ ਆਈਡੀ
+    const isEditingMode = !!editingId;
+
     const entry = {
-        id: editingId || Date.now().toString(),
+        id: newId,
         date: dateInput, mood: selectedMood, flow: selectedFlow,
         pain: parseInt(document.getElementById('painLevel').value) || 0,
         symptoms: [...selectedSymptoms], note: document.getElementById('periodNote').value.trim()
     };
 
-    if (editingId) {
+    if (isEditingMode) {
         const idx = cycles.findIndex(c => c.id === editingId);
         if (idx !== -1) cycles[idx] = entry;
         editingId = null;
-    } else cycles.push(entry);
+    } else {
+        cycles.push(entry);
+    }
 
     saveData(); resetForm();
-    showToast(editingId ? '✅ ਰਿਕਾਰਡ ਅਪਡੇਟ ਹੋ ਗਿਆ!' : '✅ ਡਾਟਾ ਸੇਵ ਹੋ ਗਿਆ!');
+    showToast(isEditingMode ? '✅ ਰਿਕਾਰਡ ਅਪਡੇਟ ਹੋ ਗਿਆ!' : '✅ ਡਾਟਾ ਸੇਵ ਹੋ ਗਿਆ!');
     switchTab('history');
 }
 
@@ -591,6 +596,7 @@ function exportJSON() {
     a.click();
     showToast('✅ ਬੈਕਅੱਪ ਡਾਊਨਲੋਡ ਹੋਇਆ');
 }
+
 function importJSON(e) {
     const file = e.target.files[0];
     if(!file) return;
@@ -600,10 +606,32 @@ function importJSON(e) {
             const data = JSON.parse(ev.target.result);
             if(!Array.isArray(data)) throw new Error();
             if(confirm(`${data.length} ਰਿਕਾਰਡ ਮਿਲੇ। ਕੀ ਰਿਸਟੋਰ ਕਰਨਾ ਹੈ? (ਮੌਜੂਦਾ ਡਾਟਾ ਮਿਲਾਇਆ ਜਾਵੇਗਾ)`)){
-                const existing = new Set(cycles.map(c=>c.date));
-                data.forEach(c=>{ if(!existing.has(c.date)) cycles.push(c); });
-                saveData(); switchTab('dashboard');
-                showToast(`✅ ${data.length} ਰਿਕਾਰਡ ਰਿਸਟੋਰ ਹੋਏ`);
+                let updatedCount = 0;
+                let addedCount = 0;
+                
+                data.forEach(incoming => {
+                    const existingIndex = cycles.findIndex(c => c.date === incoming.date);
+                    
+                    if (existingIndex !== -1) {
+                        // ਜੇਕਰ ਤਰੀਕ ਪਹਿਲਾਂ ਤੋਂ ਹੈ, ਤਾਂ ID (Timestamp) ਚੈੱਕ ਕਰੋ
+                        const incomingTime = Number(incoming.id) || 0;
+                        const existingTime = Number(cycles[existingIndex].id) || 0;
+                        
+                        // ਜੇ ਆਉਣ ਵਾਲੇ ਡਾਟੇ ਦਾ ਸਮਾਂ (ID) ਪੁਰਾਣੇ ਨਾਲੋਂ ਵੱਧ ਹੈ, ਤਾਂ ਅਪਡੇਟ ਕਰੋ
+                        if (incomingTime > existingTime) {
+                            cycles[existingIndex] = incoming;
+                            updatedCount++;
+                        }
+                    } else {
+                        // ਨਵੀਂ ਤਰੀਕ ਹੈ ਤਾਂ ਸਿੱਧਾ ਐਡ ਕਰੋ
+                        cycles.push(incoming);
+                        addedCount++;
+                    }
+                });
+                
+                saveData(); 
+                switchTab('dashboard');
+                showToast(`✅ ${addedCount} ਨਵੇਂ ਸ਼ਾਮਲ ਹੋਏ, ${updatedCount} ਅਪਡੇਟ ਹੋਏ`);
             }
         } catch { showToast('⚠️ ਫਾਈਲ ਗਲਤ ਹੈ'); }
     };
