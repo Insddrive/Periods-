@@ -326,7 +326,7 @@ function handleAddPeriod() {
     const duplicate = cycles.some(c => c.date === dateInput && c.id !== editingId);
     if(duplicate){ showToast('⚠️ ਇਹ ਤਰੀਕ ਪਹਿਲਾਂ ਦਰਜ ਹੈ'); return; }
 
-    const newId = Date.now().toString(); // ਹਰੇਕ ਬਦਲਾਅ ਦੀ ਨਵੀਂ ਯੂਨੀਕ ਆਈਡੀ
+    const newId = Date.now().toString(); 
     const isEditingMode = !!editingId;
 
     const entry = {
@@ -613,17 +613,14 @@ function importJSON(e) {
                     const existingIndex = cycles.findIndex(c => c.date === incoming.date);
                     
                     if (existingIndex !== -1) {
-                        // ਜੇਕਰ ਤਰੀਕ ਪਹਿਲਾਂ ਤੋਂ ਹੈ, ਤਾਂ ID (Timestamp) ਚੈੱਕ ਕਰੋ
                         const incomingTime = Number(incoming.id) || 0;
                         const existingTime = Number(cycles[existingIndex].id) || 0;
                         
-                        // ਜੇ ਆਉਣ ਵਾਲੇ ਡਾਟੇ ਦਾ ਸਮਾਂ (ID) ਪੁਰਾਣੇ ਨਾਲੋਂ ਵੱਧ ਹੈ, ਤਾਂ ਅਪਡੇਟ ਕਰੋ
                         if (incomingTime > existingTime) {
                             cycles[existingIndex] = incoming;
                             updatedCount++;
                         }
                     } else {
-                        // ਨਵੀਂ ਤਰੀਕ ਹੈ ਤਾਂ ਸਿੱਧਾ ਐਡ ਕਰੋ
                         cycles.push(incoming);
                         addedCount++;
                     }
