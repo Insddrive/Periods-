@@ -1,4 +1,4 @@
-const CACHE_NAME = 'periods-v7';
+const CACHE_NAME = 'periods-v8';
 const APP_SHELL = [
   './',
   './index.html',
