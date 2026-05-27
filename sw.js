@@ -1,4 +1,29 @@
-const CACHE_NAME = 'periods-v9';
+importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAZQSsBTBMR4dGBkyka5VhPGB0FZ3lVtjQ",
+  authDomain: "periods-pwa.firebaseapp.com",
+  projectId: "periods-pwa",
+  storageBucket: "periods-pwa.firebasestorage.app",
+  messagingSenderId: "1037007369851",
+  appId: "1:1037007369851:web:f109f4e0eb5def1830d4de"
+};
+
+firebase.initializeApp(firebaseConfig);
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage(function(payload) {
+  console.log('ਨਵਾਂ ਬੈਕਗ੍ਰਾਊਂਡ ਮੈਸੇਜ ਆਇਆ: ', payload);
+  const notificationTitle = payload.notification.title || 'Periods Alert';
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: './icon-192.png'
+  };
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+const CACHE_NAME = 'periods-v10';
 const APP_SHELL = [
   './',
   './index.html',
@@ -30,6 +55,11 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
 
+  // ਫਾਇਰਬੇਸ ਦੀਆਂ ਬਾਹਰੀ ਫਾਈਲਾਂ ਨੂੰ ਕੈਸ਼ ਹੋਣ ਤੋਂ ਰੋਕਣ ਲਈ
+  if (new URL(request.url).origin !== self.location.origin) {
+    return;
+  }
+
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
@@ -39,22 +69,6 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => caches.match('./').then((res) => res || caches.match('./index.html')))
-    );
-    return;
-  }
-
-  if (new URL(request.url).origin === self.location.origin) {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        return (
-          cached ||
-          fetch(request).then((response) => {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)).catch(() => {});
-            return response;
-          })
-        );
-      })
     );
     return;
   }
