@@ -47,6 +47,9 @@
     <div class="container mx-auto px-4 flex justify-between items-center max-w-5xl">
         <h1 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-heart-pulse"></i> Periods</h1>
         <div class="flex gap-2">
+            <button onclick="enableNotifications()" title="ਨੋਟੀਫਿਕੇਸ਼ਨ ਚਾਲੂ ਕਰੋ" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition">
+                <i class="fa-solid fa-bell"></i> <span class="hidden sm:inline">Alerts</span>
+            </button>
             <button onclick="exportJSON()" title="ਡਾਟਾ ਬੈਕਅੱਪ" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition">
                 <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">ਬੈਕਅੱਪ</span>
             </button>
@@ -326,26 +329,21 @@ function handleAddPeriod() {
     const duplicate = cycles.some(c => c.date === dateInput && c.id !== editingId);
     if(duplicate){ showToast('⚠️ ਇਹ ਤਰੀਕ ਪਹਿਲਾਂ ਦਰਜ ਹੈ'); return; }
 
-    const newId = Date.now().toString(); 
-    const isEditingMode = !!editingId;
-
     const entry = {
-        id: newId,
+        id: editingId || Date.now().toString(),
         date: dateInput, mood: selectedMood, flow: selectedFlow,
         pain: parseInt(document.getElementById('painLevel').value) || 0,
         symptoms: [...selectedSymptoms], note: document.getElementById('periodNote').value.trim()
     };
 
-    if (isEditingMode) {
+    if (editingId) {
         const idx = cycles.findIndex(c => c.id === editingId);
         if (idx !== -1) cycles[idx] = entry;
         editingId = null;
-    } else {
-        cycles.push(entry);
-    }
+    } else cycles.push(entry);
 
     saveData(); resetForm();
-    showToast(isEditingMode ? '✅ ਰਿਕਾਰਡ ਅਪਡੇਟ ਹੋ ਗਿਆ!' : '✅ ਡਾਟਾ ਸੇਵ ਹੋ ਗਿਆ!');
+    showToast(editingId ? '✅ ਰਿਕਾਰਡ ਅਪਡੇਟ ਹੋ ਗਿਆ!' : '✅ ਡਾਟਾ ਸੇਵ ਹੋ ਗਿਆ!');
     switchTab('history');
 }
 
@@ -596,7 +594,6 @@ function exportJSON() {
     a.click();
     showToast('✅ ਬੈਕਅੱਪ ਡਾਊਨਲੋਡ ਹੋਇਆ');
 }
-
 function importJSON(e) {
     const file = e.target.files[0];
     if(!file) return;
@@ -606,29 +603,10 @@ function importJSON(e) {
             const data = JSON.parse(ev.target.result);
             if(!Array.isArray(data)) throw new Error();
             if(confirm(`${data.length} ਰਿਕਾਰਡ ਮਿਲੇ। ਕੀ ਰਿਸਟੋਰ ਕਰਨਾ ਹੈ? (ਮੌਜੂਦਾ ਡਾਟਾ ਮਿਲਾਇਆ ਜਾਵੇਗਾ)`)){
-                let updatedCount = 0;
-                let addedCount = 0;
-                
-                data.forEach(incoming => {
-                    const existingIndex = cycles.findIndex(c => c.date === incoming.date);
-                    
-                    if (existingIndex !== -1) {
-                        const incomingTime = Number(incoming.id) || 0;
-                        const existingTime = Number(cycles[existingIndex].id) || 0;
-                        
-                        if (incomingTime > existingTime) {
-                            cycles[existingIndex] = incoming;
-                            updatedCount++;
-                        }
-                    } else {
-                        cycles.push(incoming);
-                        addedCount++;
-                    }
-                });
-                
-                saveData(); 
-                switchTab('dashboard');
-                showToast(`✅ ${addedCount} ਨਵੇਂ ਸ਼ਾਮਲ ਹੋਏ, ${updatedCount} ਅਪਡੇਟ ਹੋਏ`);
+                const existing = new Set(cycles.map(c=>c.date));
+                data.forEach(c=>{ if(!existing.has(c.date)) cycles.push(c); });
+                saveData(); switchTab('dashboard');
+                showToast(`✅ ${data.length} ਰਿਕਾਰਡ ਰਿਸਟੋਰ ਹੋਏ`);
             }
         } catch { showToast('⚠️ ਫਾਈਲ ਗਲਤ ਹੈ'); }
     };
@@ -647,7 +625,7 @@ window.onload = () => {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-  import { getMessaging } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+  import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAZQSsBTBMR4dGBkyka5VhPGB0FZ3lVtjQ",
@@ -662,8 +640,29 @@ window.onload = () => {
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const messaging = getMessaging(app);
-  
-  console.log("Firebase Successfully Connected!");
+
+  window.enableNotifications = async () => {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        showToast('⏳ ਨੋਟੀਫਿਕੇਸ਼ਨ ਸੈੱਟਅੱਪ ਹੋ ਰਿਹਾ ਹੈ...');
+        const token = await getToken(messaging, { 
+          vapidKey: 'BPDuHCr3kcMmyWzWMF6tjH3ZCikADzWDQi-bbvrQUvFdm3HKppCW3-rnO0qp42FJ_cyZTBonG79ToYVLM7acvo4' 
+        });
+        if (token) {
+          console.log('FCM Token:', token);
+          showToast('✅ ਨੋਟੀਫਿਕੇਸ਼ਨ ਸਫਲਤਾਪੂਰਵਕ ਚਾਲੂ ਹੋ ਗਏ!');
+        } else {
+          showToast('⚠️ ਟੋਕਨ ਨਹੀਂ ਮਿਲਿਆ');
+        }
+      } else {
+        showToast('⚠️ ਤੁਸੀਂ ਨੋਟੀਫਿਕੇਸ਼ਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੱਤੀ');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showToast('❌ Service Worker ਮੌਜੂਦ ਨਹੀਂ ਹੈ');
+    }
+  };
 </script>
 </body>
 </html>
