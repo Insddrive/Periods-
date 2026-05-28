@@ -18,7 +18,8 @@ messaging.onBackgroundMessage(function(payload) {
   const notificationTitle = payload.notification.title || 'Periods Alert';
   const notificationOptions = {
     body: payload.notification.body,
-    icon: './icon-192.png'
+    icon: './icon-192.png',
+    vibrate: [300, 100, 300, 100, 300] // ਇਹ ਲਾਈਨ ਵਾਈਬਰੇਸ਼ਨ ਕਰੇਗੀ (ਵਾਈਬ੍ਰੇਟ, ਬ੍ਰੇਕ, ਵਾਈਬ੍ਰੇਟ)
   };
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
@@ -55,7 +56,6 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
 
-  // ਫਾਇਰਬੇਸ ਦੀਆਂ ਬਾਹਰੀ ਫਾਈਲਾਂ ਨੂੰ ਕੈਸ਼ ਹੋਣ ਤੋਂ ਰੋਕਣ ਲਈ
   if (new URL(request.url).origin !== self.location.origin) {
     return;
   }
