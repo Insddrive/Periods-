@@ -149,7 +149,7 @@
                         ਰੱਦ ਕਰੋ
                     </button>
                 </div>
-                <p class="text-xs text-center text-gray-400">* ਡਾਟਾ ਤੁਹਾਡੇ ਫੋਨ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਰਹੇਗਾ。</p>
+                <p class="text-xs text-center text-gray-400">* ਡਾਟਾ ਤੁਹਾਡੇ ਫੋਨ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਰਹੇਗਾ।</p>
             </div>
         </div>
     </div>
@@ -646,13 +646,14 @@ window.onload = () => {
   const analytics = getAnalytics(app);
   const messaging = getMessaging(app);
 
-  // ਮਜਬੂਤ ਲੌਜਿਕ: ਜੇਕਰ ਐਪ ਖੁੱਲ੍ਹੀ ਵੀ ਹੈ, ਤਾਂ ਵੀ ਸਿਸਟਮ ਨੋਟੀਫਿਕੇਸ਼ਨ ਹੀ ਭੇਜੋ
   onMessage(messaging, (payload) => {
     console.log('Foreground message received:', payload);
     
-    const title = payload.notification.title || "ਨਵਾਂ ਸੁਨੇਹਾ";
+    const title = (payload.data && payload.data.title) || (payload.notification && payload.notification.title) || "ਨਵਾਂ ਸੁਨੇਹਾ";
+    const body = (payload.data && payload.data.body) || (payload.notification && payload.notification.body) || "";
+    
     const options = {
-      body: payload.notification.body,
+      body: body,
       icon: './icon-192.png',
       vibrate: [300, 100, 300, 100, 300]
     };
@@ -666,7 +667,13 @@ window.onload = () => {
 
   window.enableNotifications = async () => {
     try {
-      const permission = await Notification.requestPermission();
+      let permission = Notification.permission;
+      
+      // ਜੇਕਰ ਇਜਾਜ਼ਤ ਨਹੀਂ ਮਿਲੀ, ਤਾਂ ਹੀ ਨਵੀਂ ਮੰਗੋ
+      if (permission !== 'granted') {
+        permission = await Notification.requestPermission();
+      }
+
       if (permission === 'granted') {
         showToast('⏳ ਨੋਟੀਫਿਕੇਸ਼ਨ ਸੈੱਟਅੱਪ ਹੋ ਰਿਹਾ ਹੈ...');
         
