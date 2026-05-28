@@ -630,7 +630,7 @@ window.onload = () => {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-  import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+  import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAZQSsBTBMR4dGBkyka5VhPGB0FZ3lVtjQ",
@@ -646,17 +646,21 @@ window.onload = () => {
   const analytics = getAnalytics(app);
   const messaging = getMessaging(app);
 
+  onMessage(messaging, (payload) => {
+    console.log('ਨਵਾਂ ਮੈਸੇਜ ਆਇਆ:', payload);
+    alert("🌸 ਨਵਾਂ ਸੁਨੇਹਾ: " + payload.notification.title + "\n\n" + payload.notification.body);
+  });
+
   window.enableNotifications = async () => {
     try {
       const permission = await Notification.requestPermission();
       if (permission === 'granted') {
         showToast('⏳ ਨੋਟੀਫਿਕੇਸ਼ਨ ਸੈੱਟਅੱਪ ਹੋ ਰਿਹਾ ਹੈ...');
         
-        // Service Worker ਨੂੰ ਲੱਭ ਕੇ Firebase ਨਾਲ ਜੋੜਨਾ
         const swRegistration = await navigator.serviceWorker.ready;
 
         const token = await getToken(messaging, { 
-          vapidKey: 'BPDuHCr3kcMmyWzWMF6tjH3ZCikADzWDQi-bbvrQUvFdm3HKppCW3-rnO0qp42 জনকেCW3-rnO0qp42FJ_cyZTBonG79ToYVLM7acvo4',
+          vapidKey: 'BPDuHCr3kcMmyWzWMF6tjH3ZCikADzWDQi-bbvrQUvFdm3HKppCW3-rnO0qp42FJ_cyZTBonG79ToYVLM7acvo4',
           serviceWorkerRegistration: swRegistration
         });
 
