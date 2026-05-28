@@ -648,6 +648,10 @@ window.onload = () => {
 
   onMessage(messaging, (payload) => {
     console.log('ਨਵਾਂ ਮੈਸੇਜ ਆਇਆ:', payload);
+    // ਇਹ ਕੋਡ ਫੋਨ ਨੂੰ ਵਾਈਬ੍ਰੇਟ ਕਰਵਾਏਗਾ ਜਦੋਂ ਐਪ ਖੁੱਲ੍ਹੀ ਹੋਵੇ
+    if (navigator.vibrate) {
+      navigator.vibrate([300, 100, 300, 100, 300]);
+    }
     alert("🌸 ਨਵਾਂ ਸੁਨੇਹਾ: " + payload.notification.title + "\n\n" + payload.notification.body);
   });
 
