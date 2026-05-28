@@ -661,16 +661,18 @@ window.onload = () => {
           serviceWorkerRegistration: swRegistration
         });
 
-        if (token) {
+                if (token) {
           console.log('FCM Token:', token);
+          
+          fetch('https://periods-admin.vercel.app/api/index', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'subscribe', token: token })
+          }).catch(e => console.log("Token sent error:", e));
+
           showToast('✅ ਨੋਟੀਫਿਕੇਸ਼ਨ ਸਫਲਤਾਪੂਰਵਕ ਚਾਲੂ ਹੋ ਗਏ!');
         } else {
-          showToast('⚠️ ਟੋਕਨ ਨਹੀਂ ਮਿਲਿਆ');
-        }
-      } else {
-        showToast('⚠️ ਤੁਸੀਂ ਨੋਟੀਫਿਕੇਸ਼ਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੱਤੀ');
-      }
-    } catch (error) {
+
       console.error('Error:', error);
       showToast('❌ ਐਰਰ: ' + error.message);
     }
