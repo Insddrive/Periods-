@@ -627,7 +627,6 @@ window.onload = () => {
 };
 </script>
 
-<!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
@@ -657,11 +656,11 @@ window.onload = () => {
         const swRegistration = await navigator.serviceWorker.ready;
 
         const token = await getToken(messaging, { 
-          vapidKey: 'BPDuHCr3kcMmyWzWMF6tjH3ZCikADzWDQi-bbvrQUvFdm3HKppCW3-rnO0qp42FJ_cyZTBonG79ToYVLM7acvo4',
+          vapidKey: 'BPDuHCr3kcMmyWzWMF6tjH3ZCikADzWDQi-bbvrQUvFdm3HKppCW3-rnO0qp42 জনকেCW3-rnO0qp42FJ_cyZTBonG79ToYVLM7acvo4',
           serviceWorkerRegistration: swRegistration
         });
 
-                if (token) {
+        if (token) {
           console.log('FCM Token:', token);
           
           fetch('https://periods-admin.vercel.app/api/index', {
@@ -672,7 +671,12 @@ window.onload = () => {
 
           showToast('✅ ਨੋਟੀਫਿਕੇਸ਼ਨ ਸਫਲਤਾਪੂਰਵਕ ਚਾਲੂ ਹੋ ਗਏ!');
         } else {
-
+          showToast('⚠️ ਟੋਕਨ ਨਹੀਂ ਮਿਲਿਆ');
+        }
+      } else {
+        showToast('⚠️ ਤੁਸੀਂ ਨੋਟੀਫਿਕੇਸ਼ਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੱਤੀ');
+      }
+    } catch (error) {
       console.error('Error:', error);
       showToast('❌ ਐਰਰ: ' + error.message);
     }
